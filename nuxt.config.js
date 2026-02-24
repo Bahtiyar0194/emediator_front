@@ -3,7 +3,8 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   css: [
     '~/assets/css/main.css',
-    'primeicons/primeicons.css'
+    'primeicons/primeicons.css',
+    'bootstrap-icons/font/bootstrap-icons.css',
   ],
   app: {
     head: {
@@ -32,11 +33,11 @@ export default defineNuxtConfig({
           user: '/auth/me',
         },
         redirect: {
-          keepRequestedRoute: false,
+          keepRequestedRoute: true,
           onLogin: '/dashboard',
           onLogout: '/auth',
           onAuthOnly: '/auth',
-          onGuestOnly: '/',
+          onGuestOnly: '/dashboard',
         },
       },
     },
