@@ -124,7 +124,7 @@
     <div class="form-group-border active">
       <i class="pi pi-money-bill"></i>
       <input
-        v-model="docData.agreement_data.monthly_amount"
+        v-model="monthlyAmount"
         type="text"
         placeholder=" "
       />
@@ -182,6 +182,11 @@ const props = defineProps({
 const { errors, mode, docData } = toRefs(props);
 
 const { getError } = useAgreementFormErrors(errors, "agreement_data");
+
+const monthlyAmount = useNumberMask(
+  docData.value.agreement_data,
+  "monthly_amount",
+);
 
 const fields = {
   monthly_amount: null,

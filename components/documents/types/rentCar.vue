@@ -4,16 +4,15 @@
   <div class="col-span-12 lg:col-span-4">
     <div class="form-group-border active">
       <i class="pi pi-car"></i>
-      <input name="car_brand" type="text" placeholder=" " />
-      <label
-        :class="{
-          'label-error': errors.car_brand,
-        }"
-      >
+      <input
+        v-model="docData.agreement_data.car_brand"
+        type="text"
+        placeholder=" "
+      />
+      <label :class="{ 'label-error': getError('car_brand') }">
         {{
-          errors.car_brand
-            ? errors.car_brand[0]
-            : $t("pages.documents.attributes.car_data.brand")
+          getError("car_brand") ||
+          $t("pages.documents.attributes.car_data.brand")
         }}
       </label>
     </div>
@@ -22,16 +21,15 @@
   <div class="col-span-12 lg:col-span-4">
     <div class="form-group-border active">
       <i class="pi pi-car"></i>
-      <input name="car_model" type="text" placeholder=" " />
-      <label
-        :class="{
-          'label-error': errors.car_model,
-        }"
-      >
+      <input
+        v-model="docData.agreement_data.car_model"
+        type="text"
+        placeholder=" "
+      />
+      <label :class="{ 'label-error': getError('car_model') }">
         {{
-          errors.car_model
-            ? errors.car_model[0]
-            : $t("pages.documents.attributes.car_data.model")
+          getError("car_model") ||
+          $t("pages.documents.attributes.car_data.model")
         }}
       </label>
     </div>
@@ -41,22 +39,14 @@
     <div class="form-group-border active">
       <i class="pi pi-hashtag"></i>
       <input
-        name="state_registration_number"
+        v-model="docData.agreement_data.state_registration_number"
         type="text"
-        v-mask="'### AAA ##'"
         placeholder=" "
       />
-      <label
-        :class="{
-          'label-error': errors.state_registration_number,
-        }"
-      >
+      <label :class="{ 'label-error': getError('state_registration_number') }">
         {{
-          errors.state_registration_number
-            ? errors.state_registration_number[0]
-            : $t(
-                "pages.documents.attributes.car_data.state_registration_number",
-              )
+          getError("state_registration_number") ||
+          $t("pages.documents.attributes.car_data.state_registration_number")
         }}
       </label>
     </div>
@@ -66,20 +56,15 @@
     <div class="form-group-border active">
       <i class="pi pi-barcode"></i>
       <input
-        name="vin_code"
+        v-model="docData.agreement_data.vin_code"
         type="text"
         v-mask="'XXXXXXXXXXXXXXXXX'"
         placeholder=""
       />
-      <label
-        :class="{
-          'label-error': errors.vin_code,
-        }"
-      >
+      <label :class="{ 'label-error': getError('vin_code') }">
         {{
-          errors.vin_code
-            ? errors.vin_code[0]
-            : $t("pages.documents.attributes.car_data.vin_code")
+          getError("vin_code") ||
+          $t("pages.documents.attributes.car_data.vin_code")
         }}
       </label>
     </div>
@@ -89,20 +74,15 @@
     <div class="form-group-border active">
       <i class="pi pi-calendar"></i>
       <input
-        name="year_of_release"
+        v-model="docData.agreement_data.year_of_release"
         type="text"
         v-mask="'####'"
         placeholder=""
       />
-      <label
-        :class="{
-          'label-error': errors.year_of_release,
-        }"
-      >
+      <label :class="{ 'label-error': getError('year_of_release') }">
         {{
-          errors.year_of_release
-            ? errors.year_of_release[0]
-            : $t("pages.documents.attributes.car_data.year_of_release")
+          getError("year_of_release") ||
+          $t("pages.documents.attributes.car_data.year_of_release")
         }}
       </label>
     </div>
@@ -111,8 +91,8 @@
   <div class="col-span-12 lg:col-span-6">
     <div class="form-group-border select active label-active">
       <i class="pi pi-file"></i>
-      <select name="body_color_id">
-        <option disabled selected value="">
+      <select v-model="docData.agreement_data.body_color_id">
+        <option disabled :value="null">
           {{ $t("pages.documents.attributes.car_data.body_color.select") }}
         </option>
         <option
@@ -123,13 +103,9 @@
           {{ option.color_name }}
         </option>
       </select>
-      <label
-        :class="{
-          'label-error': errors.body_color_id,
-        }"
-      >
+      <label :class="{ 'label-error': getError('body_color_id') }">
         {{
-          errors.body_color_id
+          getError("body_color_id")
             ? $t("pages.documents.attributes.car_data.body_color.select")
             : $t("pages.documents.attributes.car_data.body_color.title")
         }}
@@ -141,19 +117,18 @@
     <div class="form-group-border active">
       <i class="pi pi-credit-card"></i>
       <input
-        name="car_amount"
+        v-model="carAmount"
         type="text"
         placeholder=""
       />
       <label
         :class="{
-          'label-error': errors.car_amount,
+          'label-error': getError('car_amount'),
         }"
       >
         {{
-          errors.car_amount
-            ? errors.car_amount[0]
-            : $t("pages.documents.attributes.car_data.amount")
+          getError("car_amount") ||
+          $t("pages.documents.attributes.car_data.amount")
         }}
       </label>
     </div>
@@ -164,8 +139,8 @@
   <div class="col-span-12 lg:col-span-6">
     <div class="form-group-border select active label-active">
       <i class="pi pi-credit-card"></i>
-      <select name="payment_format">
-        <option disabled selected value="">
+      <select v-model="docData.agreement_data.payment_format">
+        <option disabled :value="null">
           {{ $t("pages.documents.attributes.rent.payment_format.select") }}
         </option>
         <option v-for="option in paymentFormats" :key="option" :value="option">
@@ -180,11 +155,11 @@
       </select>
       <label
         :class="{
-          'label-error': errors.payment_format,
+          'label-error': getError('payment_format'),
         }"
       >
         {{
-          errors.payment_format
+          getError("payment_format")
             ? $t("pages.documents.attributes.rent.payment_format.select")
             : $t("pages.documents.attributes.rent.payment_format.title")
         }}
@@ -196,19 +171,18 @@
     <div class="form-group-border active">
       <i class="pi pi-credit-card"></i>
       <input
-        name="rent_amount"
+        v-model="rentAmount"
         type="text"
         placeholder=""
       />
       <label
         :class="{
-          'label-error': errors.rent_amount,
+          'label-error': getError('rent_amount'),
         }"
       >
         {{
-          errors.rent_amount
-            ? errors.rent_amount[0]
-            : $t("pages.documents.attributes.rent.amount")
+          getError("rent_amount") ||
+          $t("pages.documents.attributes.rent.amount")
         }}
       </label>
     </div>
@@ -217,16 +191,19 @@
   <div class="col-span-12 lg:col-span-6">
     <div class="form-group-border active">
       <i class="pi pi-calendar"></i>
-      <input name="rent_start_date" type="date" placeholder=" " />
+      <input
+        v-model="docData.agreement_data.rent_start_date"
+        type="date"
+        placeholder=" "
+      />
       <label
         :class="{
-          'label-error': errors.rent_start_date,
+          'label-error': getError('rent_start_date'),
         }"
       >
         {{
-          errors.rent_start_date
-            ? errors.rent_start_date[0]
-            : $t("pages.documents.attributes.rent.start_date")
+          getError("rent_start_date") ||
+          $t("pages.documents.attributes.rent.start_date")
         }}
       </label>
     </div>
@@ -235,16 +212,19 @@
   <div class="col-span-12 lg:col-span-6">
     <div class="form-group-border active">
       <i class="pi pi-calendar-clock"></i>
-      <input name="rent_period" type="number" placeholder=" " />
+      <input
+        v-model="docData.agreement_data.rent_period"
+        type="number"
+        placeholder=" "
+      />
       <label
         :class="{
-          'label-error': errors.rent_period,
+          'label-error': getError('rent_period'),
         }"
       >
         {{
-          errors.rent_period
-            ? errors.rent_period[0]
-            : $t("pages.documents.attributes.rent.period")
+          getError("rent_period") ||
+          $t("pages.documents.attributes.rent.period")
         }}
       </label>
     </div>
@@ -271,7 +251,45 @@ const props = defineProps({
 
 const { errors, mode, docData } = toRefs(props);
 
+const { getError } = useAgreementFormErrors(errors, "agreement_data");
+
+const fields = {
+  car_brand: null,
+  car_model: null,
+  state_registration_number: null,
+  vin_code: null,
+  year_of_release: null,
+  body_color_id: null,
+  car_amount: null,
+  payment_format: null,
+  rent_amount: null,
+  rent_start_date: null,
+  rent_period: null,
+};
+
 const colors = inject("colors", ref([]));
 
 const paymentFormats = ["daily", "monthly"];
+
+const carAmount = useNumberMask(
+  docData.value.agreement_data,
+  "car_amount",
+);
+
+const rentAmount = useNumberMask(
+  docData.value.agreement_data,
+  "rent_amount",
+);
+
+onMounted(() => {
+  if (mode.value === "create") {
+    Object.entries(fields).forEach(([key, value]) => {
+      docData.value.agreement_data[key] = value;
+    });
+  }
+});
+
+onBeforeUnmount(() => {
+  docData.value.agreement_data = {};
+});
 </script>

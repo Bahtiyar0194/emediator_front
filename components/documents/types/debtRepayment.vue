@@ -159,22 +159,26 @@
       />
 
       <div class="col-span-12 lg:col-span-4">
-        <div class="form-group-border active">
+        <div class="form-group-border select active label-active">
           <i class="pi pi-building-columns"></i>
-          <input
-            v-model="docData.agreement_data.bank_name"
-            type="text"
-            placeholder=" "
-          />
-          <label
-            :class="{
-              'label-error': errors.bank_name,
-            }"
-          >
+          <select v-model="docData.agreement_data.bank_id">
+            <option disabled :value="null">
+              {{
+                $t("pages.documents.attributes.loan.lender.details.bank_name")
+              }}
+            </option>
+            <option
+              v-for="option in banks"
+              :key="option.bank_id"
+              :value="option.bank_id"
+            >
+              {{ option.bank_name }}
+            </option>
+          </select>
+          <label :class="{ 'label-error': getError('bank_id') }">
             {{
-              errors.bank_name
-                ? errors.bank_name[0]
-                : $t("pages.documents.attributes.loan.lender.details.bank_name")
+              getError("bank_id") ||
+              $t("pages.documents.attributes.loan.lender.details.bank_name")
             }}
           </label>
         </div>
@@ -188,15 +192,11 @@
             type="text"
             placeholder=" "
           />
-          <label
-            :class="{
-              'label-error': errors.iik,
-            }"
-          >
+
+          <label :class="{ 'label-error': getError('iik') }">
             {{
-              errors.iik
-                ? errors.iik[0]
-                : $t("pages.documents.attributes.loan.lender.details.iik")
+              getError("iik") ||
+              $t("pages.documents.attributes.loan.lender.details.iik")
             }}
           </label>
         </div>
@@ -210,15 +210,10 @@
             type="text"
             placeholder=" "
           />
-          <label
-            :class="{
-              'label-error': errors.bik,
-            }"
-          >
+          <label :class="{ 'label-error': getError('bik') }">
             {{
-              errors.bik
-                ? errors.bik[0]
-                : $t("pages.documents.attributes.loan.lender.details.bik")
+              getError("bik") ||
+              $t("pages.documents.attributes.loan.lender.details.bik")
             }}
           </label>
         </div>
@@ -247,6 +242,8 @@ const props = defineProps({
 
 const { errors, mode, docData } = toRefs(props);
 
+const banks = inject("banks", ref([]));
+
 const { getError } = useAgreementFormErrors(errors, "agreement_data");
 
 const fields = {
@@ -257,7 +254,7 @@ const fields = {
   contract_date: null,
   repayment_start_date: null,
   repayment_period: null,
-  bank_name: null,
+  bank_id: null,
   iik: null,
   bik: null,
 };

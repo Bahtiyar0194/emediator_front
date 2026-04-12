@@ -11,7 +11,7 @@
         >
           <input
             type="radio"
-            v-model="docData.is_legal_2"
+            v-model="docData.agreement_parties[props.partyIndex].data.is_legal"
             :value="type.legal"
           />
           <span><i class="pi pi-check"></i> {{ $t(type.title) }}</span>
@@ -27,13 +27,40 @@
           <div class="form-group-border active">
             <i class="pi pi-user"></i>
             <input
-              v-model="docData.last_name_2"
+              v-model="docData.agreement_parties[props.partyIndex].iin"
+              v-mask="'############'"
+              @change="props.getUserById(props.partyIndex, $event.target.value)"
+              placeholder=" "
+            />
+            <label
+              :class="{
+                'label-error': errors[`agreement_parties.${props.partyIndex}.iin`],
+              }"
+            >
+              {{
+                errors[`agreement_parties.${props.partyIndex}.iin`]
+                  ? $t("form.iin.required")
+                  : $t("form.iin.title")
+              }}
+            </label>
+          </div>
+        </div>
+
+        <div class="col-span-12 lg:col-span-3">
+          <div class="form-group-border active">
+            <i class="pi pi-user"></i>
+            <input
+              v-model="docData.agreement_parties[props.partyIndex].last_name"
               type="text"
               placeholder=" "
             />
-            <label :class="{ 'label-error': errors.last_name_2 }">
+            <label
+              :class="{
+                'label-error': errors[`agreement_parties.${props.partyIndex}.last_name`],
+              }"
+            >
               {{
-                errors.last_name_2
+                errors[`agreement_parties.${props.partyIndex}.last_name`]
                   ? $t("form.last_name.required")
                   : $t("form.last_name.title")
               }}
@@ -45,13 +72,17 @@
           <div class="form-group-border active">
             <i class="pi pi-user"></i>
             <input
-              v-model="docData.first_name_2"
+              v-model="docData.agreement_parties[props.partyIndex].first_name"
               type="text"
               placeholder=" "
             />
-            <label :class="{ 'label-error': errors.first_name_2 }">
+            <label
+              :class="{
+                'label-error': errors[`agreement_parties.${props.partyIndex}.first_name`],
+              }"
+            >
               {{
-                errors.first_name_2
+                errors[`agreement_parties.${props.partyIndex}.first_name`]
                   ? $t("form.name.required")
                   : $t("form.name.title")
               }}
@@ -63,28 +94,12 @@
           <div class="form-group-border active">
             <i class="pi pi-user"></i>
             <input
-              v-model="docData.given_name_2"
+              v-model="docData.agreement_parties[props.partyIndex].given_name"
               type="text"
               placeholder=" "
             />
             <label>
               {{ $t("form.given_name.title") }}
-            </label>
-          </div>
-        </div>
-
-        <div class="col-span-12 lg:col-span-3">
-          <div class="form-group-border active">
-            <i class="pi pi-user"></i>
-            <input
-              v-model="docData.iin_2"
-              v-mask="'############'"
-              placeholder=" "
-            />
-            <label :class="{ 'label-error': errors.iin_2 }">
-              {{
-                errors.iin_2 ? $t("form.iin.required") : $t("form.iin.title")
-              }}
             </label>
           </div>
         </div>
@@ -118,7 +133,7 @@
             <label
               :class="{
                 'label-error':
-                  errors.location_id_2 &&
+                  errors[`agreement_parties.${props.partyIndex}.data.location_id`] &&
                   index === locationSelections.length - 1,
               }"
             >
@@ -132,10 +147,18 @@
             <div class="col-span-12 lg:col-span-4">
               <div class="form-group-border active">
                 <i class="bi bi-signpost-split"></i>
-                <input v-model="docData.street_2" placeholder=" " />
-                <label :class="{ 'label-error': errors.street_2 }">
+                <input
+                  v-model="docData.agreement_parties[props.partyIndex].data.street"
+                  placeholder=" "
+                />
+                <label
+                  :class="{
+                    'label-error':
+                      errors[`agreement_parties.${props.partyIndex}.data.street`],
+                  }"
+                >
                   {{
-                    errors.street_2
+                    errors[`agreement_parties.${props.partyIndex}.data.street`]
                       ? $t("form.street.required")
                       : $t("form.street.title")
                   }}
@@ -147,13 +170,18 @@
               <div class="form-group-border active">
                 <i class="pi pi-home"></i>
                 <input
-                  v-model="docData.house_2"
+                  v-model="docData.agreement_parties[props.partyIndex].data.house"
                   type="number"
                   placeholder=" "
                 />
-                <label :class="{ 'label-error': errors.house_2 }">
+                <label
+                  :class="{
+                    'label-error':
+                      errors[`agreement_parties.${props.partyIndex}.data.house`],
+                  }"
+                >
                   {{
-                    errors.house_2
+                    errors[`agreement_parties.${props.partyIndex}.data.house`]
                       ? $t("form.house.required")
                       : $t("form.house.title")
                   }}
@@ -165,7 +193,7 @@
               <div class="form-group-border active">
                 <i class="bi bi-door-open"></i>
                 <input
-                  v-model="docData.flat_2"
+                  v-model="docData.agreement_parties[props.partyIndex].data.flat"
                   type="number"
                   placeholder=" "
                 />
@@ -179,14 +207,21 @@
       </div>
     </div>
 
-    <div v-if="docData.is_legal_2 === true" class="col-span-12">
+    <div
+      v-if="docData.agreement_parties[props.partyIndex].data.is_legal === true"
+      class="col-span-12"
+    >
       <div class="custom-grid">
         <stepName :num="3" :title="$t('legal_entity_data')" />
 
         <div v-if="legalForms.length > 0" class="col-span-12 lg:col-span-3">
           <div class="form-group-border select active label-active">
             <i class="pi pi-id-card"></i>
-            <select v-model.number="docData.legal_form_id_2">
+            <select
+              v-model.number="
+                docData.agreement_parties[props.partyIndex].data.legal_form_id
+              "
+            >
               <option disabled :value="null">
                 {{ $t("form.select_legal_form") }}
               </option>
@@ -200,11 +235,12 @@
             </select>
             <label
               :class="{
-                'label-error': errors.legal_form_id_2,
+                'label-error':
+                  errors[`agreement_parties.${props.partyIndex}.data.legal_form_id`],
               }"
             >
               {{
-                errors.legal_form_id_2
+                errors[`agreement_parties.${props.partyIndex}.data.legal_form_id`]
                   ? $t("form.select_legal_form")
                   : $t("form.legal_form")
               }}
@@ -215,7 +251,11 @@
         <div v-if="posts.length > 0" class="col-span-12 lg:col-span-3">
           <div class="form-group-border select active label-active">
             <i class="pi pi-id-card"></i>
-            <select v-model.number="docData.post_type_id_2">
+            <select
+              v-model.number="
+                docData.agreement_parties[props.partyIndex].data.post_type_id
+              "
+            >
               <option disabled :value="null">
                 {{ $t("form.select_post") }}
               </option>
@@ -229,11 +269,14 @@
             </select>
             <label
               :class="{
-                'label-error': errors.post_type_id_2,
+                'label-error':
+                  errors[`agreement_parties.${props.partyIndex}.data.post_type_id`],
               }"
             >
               {{
-                errors.post_type_id_2 ? $t("form.select_post") : $t("form.post")
+                errors[`agreement_parties.${props.partyIndex}.data.post_type_id`]
+                  ? $t("form.select_post")
+                  : $t("form.post")
               }}
             </label>
           </div>
@@ -243,13 +286,19 @@
           <div class="form-group-border active">
             <i class="pi pi-id-card"></i>
             <input
-              v-model="docData.bin_2"
+              v-model="docData.agreement_parties[props.partyIndex].data.bin"
               v-mask="'############'"
               placeholder=" "
             />
-            <label :class="{ 'label-error': errors.bin_2 }">
+            <label
+              :class="{
+                'label-error': errors[`agreement_parties.${props.partyIndex}.data.bin`],
+              }"
+            >
               {{
-                errors.bin_2 ? $t("form.bin.required") : $t("form.bin.title")
+                errors[`agreement_parties.${props.partyIndex}.data.bin`]
+                  ? $t("form.bin.required")
+                  : $t("form.bin.title")
               }}
             </label>
           </div>
@@ -259,13 +308,18 @@
           <div class="form-group-border active">
             <i class="pi pi-file"></i>
             <input
-              v-model="docData.company_name_2"
+              v-model="docData.agreement_parties[props.partyIndex].data.company_name"
               type="text"
               placeholder=" "
             />
-            <label :class="{ 'label-error': errors.company_name_2 }">
+            <label
+              :class="{
+                'label-error':
+                  errors[`agreement_parties.${props.partyIndex}.data.company_name`],
+              }"
+            >
               {{
-                errors.company_name_2
+                errors[`agreement_parties.${props.partyIndex}.data.company_name`]
                   ? $t("form.company_name.required")
                   : $t("form.company_name.title")
               }}
@@ -299,8 +353,9 @@
             <label
               :class="{
                 'label-error':
-                  errors.company_location_id_2 &&
-                  index === companyLocationSelections.length - 1,
+                  errors[
+                    `agreement_parties.${props.partyIndex}.data.company_location_id`
+                  ] && index === companyLocationSelections.length - 1,
               }"
             >
               {{ $t("form.select_a_point") }}
@@ -313,10 +368,20 @@
             <div class="col-span-12 lg:col-span-4">
               <div class="form-group-border active">
                 <i class="bi bi-signpost-split"></i>
-                <input v-model="docData.company_street_2" placeholder=" " />
-                <label :class="{ 'label-error': errors.company_street_2 }">
+                <input
+                  v-model="
+                    docData.agreement_parties[props.partyIndex].data.company_street
+                  "
+                  placeholder=" "
+                />
+                <label
+                  :class="{
+                    'label-error':
+                      errors[`agreement_parties.${props.partyIndex}.data.company_street`],
+                  }"
+                >
                   {{
-                    errors.company_street_2
+                    errors[`agreement_parties.${props.partyIndex}.data.company_street`]
                       ? $t("form.street.required")
                       : $t("form.street.title")
                   }}
@@ -328,13 +393,22 @@
               <div class="form-group-border active">
                 <i class="pi pi-building"></i>
                 <input
-                  v-model="docData.company_building_2"
+                  v-model="
+                    docData.agreement_parties[props.partyIndex].data.company_building
+                  "
                   type="number"
                   placeholder=" "
                 />
-                <label :class="{ 'label-error': errors.company_building_2 }">
+                <label
+                  :class="{
+                    'label-error':
+                      errors[
+                        `agreement_parties.${props.partyIndex}.data.company_building`
+                      ],
+                  }"
+                >
                   {{
-                    errors.company_building_2
+                    errors[`agreement_parties.${props.partyIndex}.data.company_building`]
                       ? $t("form.building.required")
                       : $t("form.building.title")
                   }}
@@ -346,7 +420,9 @@
               <div class="form-group-border active">
                 <i class="bi bi-door-open"></i>
                 <input
-                  v-model="docData.company_cabinet_2"
+                  v-model="
+                    docData.agreement_parties[props.partyIndex].data.company_cabinet
+                  "
                   type="number"
                   placeholder=" "
                 />
@@ -387,8 +463,18 @@ const props = defineProps({
     required: true,
   },
 
+  partyIndex: {
+    type: Number,
+    required: true,
+  },
+
   docData: {
     type: Object,
+    required: true,
+  },
+
+  getUserById: {
+    type: Function,
     required: true,
   },
 });
@@ -396,14 +482,27 @@ const props = defineProps({
 const { errors, locations, legalForms, posts, subjectTypes, docData } =
   toRefs(props);
 
+const locationModel = computed({
+  get: () => docData.value.agreement_parties[props.partyIndex].data.location_id,
+  set: (val) => {
+    docData.value.agreement_parties[props.partyIndex].data.location_id = val;
+  },
+});
+
+const companyLocationModel = computed({
+  get: () => docData.value.agreement_parties[props.partyIndex].data.company_location_id,
+  set: (val) => {
+    docData.value.agreement_parties[props.partyIndex].data.company_location_id = val;
+  },
+});
+
 const {
   selections: locationSelections,
   init: initLocation,
   onSelect: onSelectLocation,
 } = useLocationSelect({
   treeRef: locations,
-  modelRef: docData,
-  modelKey: "location_id_2",
+  modelRef: locationModel,
 });
 
 const {
@@ -412,8 +511,7 @@ const {
   onSelect: onSelectCompanyLocation,
 } = useLocationSelect({
   treeRef: locations,
-  modelRef: docData,
-  modelKey: "company_location_id_2",
+  modelRef: companyLocationModel,
 });
 
 watch(

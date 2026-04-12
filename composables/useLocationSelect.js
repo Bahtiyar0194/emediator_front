@@ -3,7 +3,6 @@ import { ref } from "vue";
 export function useLocationSelect({
     treeRef,          // locations
     modelRef,         // docData
-    modelKey,         // 'location_id_1' | 'company_location_id_1'
 }) {
     const selections = ref([]);
 
@@ -19,7 +18,7 @@ export function useLocationSelect({
             },
         ];
 
-        if (modelRef.value[modelKey]) {
+        if (modelRef.value) {
             restore();
         }
     };
@@ -41,15 +40,15 @@ export function useLocationSelect({
                 selectedId: "",
             });
 
-            modelRef.value[modelKey] = "";
+            modelRef.value = "";
         } else {
-            modelRef.value[modelKey] = selectedLevel.selectedId;
+            modelRef.value = selectedLevel.selectedId;
         }
     };
 
     // 🔹 Восстановление при редактировании
     const restore = () => {
-        const targetId = modelRef.value[modelKey];
+        const targetId = modelRef.value;
         if (!targetId) return;
 
         const buildPath = (nodes, path = []) => {

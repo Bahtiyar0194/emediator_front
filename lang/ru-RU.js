@@ -226,10 +226,12 @@ export default {
         auth: {
             title: 'Вход в систему',
             sign_in: 'Войти',
-            sign_with_ncalayer: 'Войти через NCALayer',
-            sign_with_ncalayer_description: 'Только через компьютер или ноутбук',
-            sign_with_qr_code: 'Войти через QR код',
-            sign_with_qr_code_description: 'С помощью смартфона через eGov Mobile или eGov Business',
+            sign: {
+                sign_with_ncalayer: 'Войти через NCALayer',
+                sign_with_ncalayer_description: 'Только через компьютер или ноутбук',
+                sign_with_qr_code: 'Войти через QR код',
+                sign_with_qr_code_description: 'С помощью смартфона через eGov Mobile или eGov Business',
+            },
             dont_have_an_account: "Нет аккаунта?",
             sign_out: 'Выйти из аккаунта',
             select_links: {
@@ -240,11 +242,19 @@ export default {
         },
         dashboard: {
             title: 'Личный кабинет',
-            main_wallet: 'Основной кошелёк'
+            main_wallet: 'Основной кошелёк',
+            go_to_dashboard: 'В личный кабинет'
         },
 
         documents: {
+            contract: {
+                title: 'Договор',
+                prepayment: 'Предоплата',
+                award: 'Вознаграждение',
+                status: 'Статус договора'
+            },
             agreement: {
+                title: 'Соглашение',
                 create: 'Создать соглашение',
                 create_alt: 'Создание соглашения',
                 edit: 'Редактировать соглашение',
@@ -252,12 +262,17 @@ export default {
                 open: 'Прочитать соглашение',
                 new: 'Новое соглашение',
                 search_filter: 'Поиск соглашении',
-                agreement_type: 'Тип соглашения'
+                agreement_type: 'Тип соглашения',
+                sign: 'Подписание соглашения',
+                status: 'Статус соглашения'
             },
 
             initiator: 'Инициатор',
             mediator: 'Медиатор',
+            select_mediator: 'Выбор медиатора',
+            select_mediator_alt: 'Выберите медиатора',
 
+            parties: 'Стороны',
             party_1: 'Сторона 1',
             party_2: 'Сторона 2',
             party_3: 'Сторона 3',
@@ -267,6 +282,19 @@ export default {
             payment_data: 'Сведения о платеже',
             monthly_amount: 'Сумма ежемесячного платежа',
             start_payment_date: 'Дата начала платежа',
+
+            sign: {
+                agreement: 'Подписать соглашение',
+                contract: 'Подписать договор',
+                verify: 'Проверить подписи',
+                verify_alt: 'Проверка подписей',
+                signed: 'Подписано',
+                pending: 'Подпись ожидается',
+                status: 'Статус',
+                at: 'Дата и время подписания',
+                sign_with_ncalayer: 'Подписать через NCALayer',
+                sign_with_qr_code: 'Подписать через QR код',
+            },
 
             attributes: {
                 amount_of_debt: {

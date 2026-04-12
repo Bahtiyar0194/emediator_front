@@ -10,7 +10,7 @@ export default defineNuxtConfig({
     head: {
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1',
-    }
+    },
   },
   modules: ['nuxt-pdfmake', "@nuxtjs/i18n", 'nuxt-auth-sanctum'],
 

@@ -59,7 +59,7 @@ const showMessage = ref(false);
 
 onMounted(() => {
   if (status && status == 401) {
-    window.location.href = "/auth/login";
+    window.location.href = "/auth";
   }
 });
 </script>

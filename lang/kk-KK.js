@@ -228,10 +228,12 @@ export default {
         auth: {
             title: 'Жүйеге кіру',
             sign_in: 'Аккаунтқа кіру',
-            sign_with_ncalayer: 'NCALayer арқылы кіру',
-            sign_with_ncalayer_description: 'Тек компьютер немесе ноутбук арқылы кіруге арналған',
-            sign_with_qr_code: 'QR коды арқылы кіру',
-            sign_with_qr_code_description: 'Смартфонның көмегімен eGov Mobile немесе eGov Business арқылы кіру',
+            sign: {
+                sign_with_ncalayer: 'NCALayer арқылы кіру',
+                sign_with_ncalayer_description: 'Тек компьютер немесе ноутбук арқылы кіруге арналған',
+                sign_with_qr_code: 'QR код арқылы кіру',
+                sign_with_qr_code_description: 'Смартфонның көмегімен eGov Mobile немесе eGov Business арқылы кіру',
+            },
             dont_have_an_account: "Менде аккаунт жоқ.",
             sign_out: 'Аккаунттан шығу',
             select_links: {
@@ -242,11 +244,19 @@ export default {
         },
         dashboard: {
             title: 'Жеке кабинет',
-            main_wallet: 'Негізгі әмиян'
+            main_wallet: 'Негізгі әмиян',
+            go_to_dashboard: 'Жеке кабинетке'
         },
 
         documents: {
+            contract: {
+                title: 'Келісім шарт',
+                prepayment: 'Алдын ала төлем',
+                award: 'Сыйақы',
+                status: 'Шарттың мәртебесі'
+            },
             agreement: {
+                title: 'Келісім',
                 create: 'Келісім құру',
                 create_alt: 'Келісім құру',
                 edit: 'Келісімді өңдеу',
@@ -254,12 +264,17 @@ export default {
                 open: 'Келісімді оқу',
                 new: 'Жаңа келісім құру',
                 search_filter: 'Келісімдерді іздеу',
-                agreement_type: 'Келісімнің түрі'
+                agreement_type: 'Келісімнің түрі',
+                sign: 'Келісімге қол қою',
+                status: 'Келісімнің мәртебесі'
             },
 
             initiator: 'Бастамашы',
             mediator: 'Медиатор',
+            select_mediator: 'Медиаторды таңдау',
+            select_mediator_alt: 'Медиаторды таңдаңыз',
 
+            parties: 'Тараптар',
             party_1: 'Бірінші тарап',
             party_2: 'Екінші тарап',
             party_3: 'Үшінші тарап',
@@ -269,6 +284,19 @@ export default {
             payment_data: 'Төлем туралы деректер',
             monthly_amount: 'Ай сайынғы төлем құны',
             start_payment_date: 'Төлемді бастау күні',
+
+            sign: {
+                agreement: 'Келісімге қол қою',
+                contract: 'Келісім-шартқа қол қою',
+                verify: 'Қолдарды тексеру',
+                verify_alt: 'Қол қойылғанын тексеру',
+                signed: 'Қол қойылды',
+                pending: 'Қол қоюы күтілуде',
+                status: 'Мәртебесі',
+                at: 'Қойылған уақыты',
+                sign_with_ncalayer: 'NCALayer арқылы қол қою',
+                sign_with_qr_code: 'QR код арқылы қол қою',
+            },
 
             attributes: {
                 amount_of_debt: {

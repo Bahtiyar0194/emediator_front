@@ -59,7 +59,6 @@
 </template>
 
 <script setup>
-import loader from "../components/ui/loader.vue";
 import selectLocale from "../components/ui/selectLocale.vue";
 import authUserMenu from "../components/authUserMenu.vue";
 import { useRoute } from "nuxt/app";

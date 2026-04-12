@@ -8,7 +8,7 @@
     <div class="custom-grid">
       <div class="col-span-12">
         <div class="btn-wrap">
-          <button class="btn btn-primary" @click="openAddModal()">
+          <button class="btn btn-primary" @click="openModal('create')">
             <i class="pi pi-plus"></i>
             {{ $t("pages.documents.agreement.new") }}
           </button>
@@ -108,7 +108,9 @@
                   :key="agreement.uuid"
                   @click="getAgreement(agreement.uuid)"
                 >
-                  <td>{{ agreement.agreement_type_name }}</td>
+                  <td>
+                    <b>{{ agreement.agreement_type_name }}</b>
+                  </td>
                   <td>
                     <div class="flex gap-x-2 items-center">
                       <userAvatar
@@ -124,22 +126,12 @@
                       {{ agreement.initiator_first_name }}
                     </div>
                   </td>
-                  <td>
-                    <div class="flex gap-x-2 items-center">
-                      <userAvatar
-                        :padding="0.5"
-                        :className="'w-6 h-6'"
-                        :user="{
-                          last_name: agreement.mediator_last_name,
-                          first_name: agreement.mediator_first_name,
-                          avatar: agreement.mediator_avatar,
-                        }"
-                      />
-                      {{ agreement.mediator_last_name }}
-                      {{ agreement.mediator_first_name }}
-                    </div>
+                  <td :class="agreement.contract_status_color">
+                    <b> {{ agreement.contract_status_name }}</b>
                   </td>
-
+                  <td :class="agreement.agreement_status_color">
+                    <b> {{ agreement.agreement_status_name }}</b>
+                  </td>
                   <td>
                     {{
                       new Date(agreement.created_at).toLocaleString(undefined, {
@@ -178,50 +170,39 @@
 
   <modal
     :show="agreementModalIsVisible"
-    :onClose="() => closeModal('agreement')"
+    :onClose="() => closeModal()"
     :loaderOpacityFull="true"
-    :className="'modal-xl'"
+    :className="'modal-6xl'"
     :showLoader="pendingModal"
+    :showPendingText="true"
     :closeOnClickSelf="false"
   >
     <template v-slot:header_content>
       <h4>
-        {{ currentAgreement ? currentAgreement.agreement_type_name : "" }}
+        {{
+          currentAgreement ? currentAgreement.agreement.agreement_type_name : ""
+        }}
       </h4>
     </template>
     <template v-slot:body_content>
-      <div class="btn-wrap">
-        <button
-          class="btn btn-success"
-          @click="
-            openFile(
-              config.public.apiBase +
-                '/agreement/get_file/' +
-                currentAgreement.uuid,
-            )
-          "
-        >
-          <i class="pi pi-file-pdf"></i>
-
-          {{ $t("pages.documents.agreement.open") }}
-        </button>
-
-        <!--Не забудь потом кнопку снизу изолировать-->
-
-        <button class="btn btn-primary" @click="openEditModal()">
-          <i class="pi pi-pencil"></i>
-          {{ $t("edit") }}
-        </button>
-      </div>
+      <template v-if="currentAgreement">
+        <div class="custom-grid">
+          <tabs :tabs="tabs_data" :activeTabIndex="0" :showTabHeader="true" />
+        </div>
+      </template>
+      <template v-else>
+        <div class="p-8"></div>
+      </template>
     </template>
   </modal>
 
   <modal
     :show="modalIsVisible"
-    :onClose="() => closeModal('create')"
+    :onClose="() => closeModal()"
     :loaderOpacityFull="true"
     :className="modalClass"
     :showLoader="pendingModal"
+    :showPendingText="true"
     :closeOnClickSelf="false"
   >
     <template v-slot:header_content>
@@ -236,7 +217,7 @@
           :maxHeight="500"
           :fadeSize="40"
         >
-          <form @submit.prevent="createDocumentSubmit" class="mt-2">
+          <form @submit.prevent="saveAgreement" class="mt-2">
             <div
               v-for="(step, index) in documentSteps"
               :key="index"
@@ -276,34 +257,115 @@
       </steps>
     </template>
   </modal>
+
+  <modal
+    :show="signModalIsViisible"
+    :onClose="() => closeSignModal()"
+    :loaderOpacityFull="true"
+    :className="'modal-xl'"
+    :showLoader="pendingModal"
+    :showPendingText="true"
+    :closeOnClickSelf="false"
+  >
+    <template v-slot:header_content>
+      <h4>
+        {{ $t("pages.documents.agreement.sign") }}
+      </h4>
+    </template>
+    <template v-if="currentAgreement" v-slot:body_content>
+      <signButtons
+        :mode="'documents'"
+        :signError="signError"
+        :signQR="signQR"
+        :signWithNCALayer="signWithNCALayer"
+        :getQR="getQR"
+        :clearQR="clearQR"
+        :reloadPage="reloadPage"
+      />
+    </template>
+  </modal>
+
+  <modal
+    :show="verifySignModalIsViisible"
+    :onClose="() => closeVerifySignModal()"
+    :loaderOpacityFull="true"
+    :className="'modal-xl'"
+    :showLoader="pendingModal"
+    :showPendingText="true"
+    :closeOnClickSelf="false"
+  >
+    <template v-slot:header_content>
+      <h4>
+        {{ $t("pages.documents.sign.verify_alt") }}
+      </h4>
+    </template>
+    <template v-if="currentAgreement" v-slot:body_content>
+      <div class="custom-grid">
+        <stepName :num="1" :title="'Скачайте .cms файл на ваше устройство'" />
+        <div class="col-span-12">
+          <button class="btn btn-primary btn-sm" @click="getCmsFile()">
+            <i class="pi pi-download"></i>
+            Скачать CMS файл
+          </button>
+        </div>
+
+        <stepName :num="2" :title="'Откройте сайт https://ezsigner.kz'" />
+        <div class="col-span-12">
+          <a
+            class="btn btn-primary btn-sm"
+            href="https://ezsigner.kz/#!/checkCMS"
+            target="_blank"
+          >
+            <i class="pi pi-external-link"></i>
+            Открыть сайт
+          </a>
+        </div>
+
+        <stepName
+          :num="3"
+          :title="'Выберите скачанный CMS файл для проверки подписей на сайте'"
+        />
+      </div>
+    </template>
+  </modal>
 </template>
 
 <script setup>
 import modal from "@/components/ui/modal.vue";
 import scrollFadeContainer from "../../components/ui/scrollFadeContainer.vue";
+import tabs from "../../components/ui/tabs.vue";
+import documentTab from "../../components/documents/tabs/documentTab.vue";
 import loader from "../../components/ui/loader.vue";
 import alert from "../../components/ui/alert.vue";
 import steps from "@/components/ui/steps.vue";
+import stepName from "../../components/ui/stepName.vue";
 import stickyBox from "../../components/ui/stickyBox.vue";
 import pagination from "../../components/ui/pagination.vue";
 import sortTableHead from "../../components/ui/sortTableHead.vue";
 import userAvatar from "../../components/ui/userAvatar.vue";
+import signButtons from "../../components/sign/signButtons.vue";
 import { debounceHandler } from "../../utils/debounceHandler";
 
-import firstStep from "@/components/documents/firstStep.vue";
-import secondStep from "../../components/documents/secondStep.vue";
-import thirdStep from "../../components/documents/thirdStep.vue";
+import partyForm from "../../components/documents/partyForm.vue";
+import agreementForm from "../../components/documents/agreementForm.vue";
+import selectMediator from "../../components/documents/selectMediator.vue";
 import { useRouter } from "nuxt/app";
+
+import { NCALayerClient } from "ncalayer-js-client";
 
 const router = useRouter();
 const config = useRuntimeConfig();
 const { t, localeProperties } = useI18n();
 const { $axiosPlugin } = useNuxtApp();
+const authUser = useSanctumUser();
 
 const docData = ref(null);
 const mode = ref(null);
+const docMode = ref(null);
 const errors = ref([]);
 const modalIsVisible = ref(false);
+const signModalIsViisible = ref(false);
+const verifySignModalIsViisible = ref(false);
 const agreementModalIsVisible = ref(false);
 const pending = ref(false);
 const pendingModal = ref(false);
@@ -318,7 +380,14 @@ const locations = ref([]);
 const legalForms = ref([]);
 const posts = ref([]);
 const agreementTypes = ref([]);
+const banks = ref([]);
 const colors = ref([]);
+const mediators = ref([]);
+
+const signedDocument = ref(null);
+const signQR = ref(null);
+const ncaLayer = ref(new NCALayerClient());
+const signError = ref(null);
 
 const sortKey = ref("agreements.created_at"); // Ключ сортировки
 const sortDirection = ref("asc"); // Направление сортировки: asc или desc
@@ -336,89 +405,115 @@ definePageMeta({
 });
 
 const createDocData = () => ({
-  is_legal_1: false,
-  is_legal_2: false,
+  agreement_parties: [
+    {
+      last_name: null,
+      first_name: null,
+      given_name: null,
+      iin: null,
 
-  last_name_1: "Ақтан",
-  last_name_2: "Дүйсенғали",
+      data: {
+        location_id: null,
+        street: null,
+        house: null,
+        flat: null,
 
-  first_name_1: "Азамат",
-  first_name_2: "Алтынай",
+        is_legal: false,
+        legal_form_id: null,
+        post_type_id: null,
+        bin: null,
+        company_name: null,
+        company_location_id: null,
+        company_street: null,
+        company_building: null,
+        company_cabinet: null,
+      },
+    },
 
-  given_name_1: "Бейсенұлы",
-  given_name_2: "Қуатқызы",
+    {
+      last_name: null,
+      first_name: null,
+      given_name: null,
+      iin: null,
 
-  iin_1: "111111111111",
-  iin_2: "222222222222",
+      data: {
+        location_id: null,
+        street: null,
+        house: null,
+        flat: null,
 
-  location_id_1: null,
-  location_id_2: null,
+        is_legal: false,
+        legal_form_id: null,
+        post_type_id: null,
+        bin: null,
+        company_name: null,
+        company_location_id: null,
+        company_street: null,
+        company_building: null,
+        company_cabinet: null,
+      },
+    },
+  ],
 
-  street_1: "Абай",
-  street_2: "мкр. Қадыр Мырза-Әлі",
-
-  house_1: 12,
-  house_2: 20,
-
-  flat_1: 1,
-  flat_2: 2,
-
-  legal_form_id_1: null,
-  legal_form_id_2: null,
-
-  post_type_id_1: null,
-  post_type_id_2: null,
-
-  bin_1: null,
-  bin_2: null,
-
-  company_name_1: null,
-  company_name_2: null,
-
-  company_location_id_1: null,
-  company_location_id_2: null,
-
-  company_street_id_1: null,
-  company_street_id_2: null,
-
-  company_building_id_1: null,
-  company_building_id_2: null,
-
-  company_cabinet_id_1: null,
-  company_cabinet_id_2: null,
+  mediator_id: null,
 
   agreement_type_id: null,
   agreement_data: {},
+  contract_data: {
+    prepayment: null,
+  },
 });
 
+const tabs_data = computed(() => [
+  {
+    name: "contract",
+    title: t("pages.documents.contract.title"),
+    icon: "pi pi-file",
+    component: documentTab,
+    props: {
+      type: "contract",
+      document: currentAgreement.value.contract,
+      openModal,
+      openSignModal,
+      openVerifySignModal,
+    },
+  },
+  {
+    name: "agreement",
+    title: t("pages.documents.agreement.title"),
+    icon: "pi pi-file",
+    component: documentTab,
+    props: {
+      type: "agreement",
+      document: currentAgreement.value.agreement,
+      openModal,
+      openSignModal,
+      openVerifySignModal,
+    },
+  },
+]);
+
+provide("banks", banks);
 provide("colors", colors);
 
-const openAddModal = () => {
-  mode.value = "create";
-  docData.value = createDocData();
-  modalIsVisible.value = true;
-  currentStep.value = 1;
-  modalClass.value = documentSteps[0].modalSize;
-};
+const openModal = (action) => {
+  mode.value = action;
 
-const openEditModal = () => {
-  mode.value = "edit";
-  docData.value = currentAgreement.value.data;
-  modalIsVisible.value = true;
-  currentStep.value = 1;
-  modalClass.value = documentSteps[0].modalSize;
-};
-
-const closeModal = (action) => {
-  pendingModal.value = false;
-  errors.value = [];
   switch (action) {
     case "create":
-      modalIsVisible.value = false;
-      getAttributes();
+      docData.value = createDocData();
       break;
 
-    case "agreement":
+    case "edit":
+      docData.value = {
+        agreement_parties: currentAgreement.value.agreement.parties.filter(
+          (p) => p.is_mediator === 0,
+        ),
+        agreement_type_id: currentAgreement.value.agreement.agreement_type_id,
+        agreement_data: currentAgreement.value.agreement.data,
+        contract_data: currentAgreement.value.contract.data,
+        mediator_id: currentAgreement.value.agreement.mediator_id,
+      };
       agreementModalIsVisible.value = false;
       break;
 
@@ -426,8 +521,48 @@ const closeModal = (action) => {
       break;
   }
 
-  docData.value = null;
-  mode.value = null;
+  modalIsVisible.value = true;
+  currentStep.value = 1;
+  modalClass.value = documentSteps[0].modalSize;
+};
+
+const closeModal = () => {
+  pendingModal.value = false;
+  errors.value = [];
+  modalIsVisible.value = false;
+  agreementModalIsVisible.value = false;
+  currentAgreement.value = null;
+
+  setTimeout(() => {
+    docData.value = null;
+    mode.value = null;
+  }, 200);
+};
+
+const openSignModal = (mode) => {
+  docMode.value = mode;
+  signModalIsViisible.value = true;
+  agreementModalIsVisible.value = false;
+};
+
+const closeSignModal = () => {
+  signModalIsViisible.value = false;
+  agreementModalIsVisible.value = true;
+  signError.value = null;
+  signQR.value = null;
+  docMode.value = null;
+};
+
+const openVerifySignModal = (mode) => {
+  docMode.value = mode;
+  verifySignModalIsViisible.value = true;
+  agreementModalIsVisible.value = false;
+};
+
+const closeVerifySignModal = () => {
+  verifySignModalIsViisible.value = false;
+  agreementModalIsVisible.value = true;
+  docMode.value = null;
 };
 
 const subjectTypes = ref([
@@ -444,7 +579,7 @@ const subjectTypes = ref([
 const agreementsTableHeads = [
   {
     title: t("pages.documents.agreement.agreement_type"),
-    keyName: "types_of_agreements.agreement_type_name",
+    keyName: "types_of_agreements_lang.agreement_type_name",
     sortType: "alpha",
   },
   {
@@ -453,8 +588,13 @@ const agreementsTableHeads = [
     sortType: "alpha",
   },
   {
-    title: t("pages.documents.mediator"),
-    keyName: "mediator.last_name",
+    title: t("pages.documents.contract.status"),
+    keyName: "contract_status_lang.status_type_name",
+    sortType: "alpha",
+  },
+  {
+    title: t("pages.documents.agreement.status"),
+    keyName: "agreement_status_lang.status_type_name",
     sortType: "alpha",
   },
   {
@@ -462,50 +602,99 @@ const agreementsTableHeads = [
     keyName: "agreements.created_at",
     sortType: "numeric",
   },
-  // {
-  //   title: t("status"),
-  //   keyName: "types_of_status_lang.status_type_name",
-  //   sortType: "alpha",
-  // },
 ];
+
+const getUserById = async (partyIndex, iin) => {
+  if (iin.length === 12) {
+    pendingModal.value = true;
+
+    await $axiosPlugin
+      .get("/users/get/" + iin)
+      .then((res) => {
+        pendingModal.value = false;
+        if (res.data.user) {
+          const user = res.data.user;
+          docData.value.agreement_parties[partyIndex].first_name =
+            user.first_name;
+          docData.value.agreement_parties[partyIndex].last_name =
+            user.last_name;
+          docData.value.agreement_parties[partyIndex].given_name =
+            user.given_name;
+
+          if (user.data) {
+            docData.value.agreement_parties[partyIndex].data = user.data;
+          }
+        }
+      })
+      .catch((err) => {
+        if (err.response) {
+          router.push({
+            path: "/error",
+            query: {
+              status: err.response.status,
+              message: err.response.data.message,
+              url: err.request.responseURL,
+            },
+          });
+        } else {
+          router.push("/error");
+        }
+      });
+  }
+};
 
 const documentSteps = [
   {
     title: t("pages.documents.party_1"),
-    component: firstStep,
+    component: partyForm,
     props: {
       errors,
       locations,
       legalForms,
       posts,
       subjectTypes,
+      partyIndex: 0,
       docData,
+      getUserById,
     },
     modalSize: "modal-6xl",
   },
   {
     title: t("pages.documents.party_2"),
-    component: secondStep,
+    component: partyForm,
     props: {
       errors,
       locations,
       legalForms,
       posts,
       subjectTypes,
+      partyIndex: 1,
       docData,
+      getUserById,
     },
     modalSize: "modal-6xl",
   },
   {
     title: t("pages.documents.form_agreement"),
-    component: thirdStep,
+    component: agreementForm,
     props: {
       errors,
       agreementTypes,
       docData,
-      mode
+      mode,
     },
     modalSize: "modal-6xl",
+  },
+  {
+    title: t("pages.documents.select_mediator"),
+    component: selectMediator,
+    props: {
+      errors,
+      mediators,
+      docData,
+      mode,
+    },
+    modalSize: "modal-4xl",
   },
 ];
 
@@ -514,6 +703,11 @@ const currentStep = ref(1);
 const backToStep = (step) => {
   currentStep.value = step;
   modalClass.value = documentSteps[step - 1].modalSize;
+  pendingModal.value = true;
+
+  setTimeout(() => {
+    pendingModal.value = false;
+  }, 500);
 };
 
 const getAttributes = async () => {
@@ -524,7 +718,9 @@ const getAttributes = async () => {
       legalForms.value = res.data.legal_forms;
       posts.value = res.data.posts;
       agreementTypes.value = res.data.agreement_types;
+      banks.value = res.data.banks;
       colors.value = res.data.colors;
+      mediators.value = res.data.mediators;
     })
     .catch((err) => {
       if (err.response) {
@@ -579,15 +775,16 @@ const getAgreements = async (url) => {
 const getAgreement = async (uuid) => {
   agreementModalIsVisible.value = true;
   pendingModal.value = true;
-
   await $axiosPlugin
     .post("agreement/get/" + uuid, {
       lang: localeProperties.value.code,
     })
     .then((response) => {
-      currentAgreement.value = response.data;
-      console.log(currentAgreement.value);
-      pendingModal.value = false;
+      currentAgreement.value = null;
+      setTimeout(() => {
+        currentAgreement.value = response.data;
+        pendingModal.value = false;
+      }, 200);
     })
     .catch((err) => {
       if (err.response) {
@@ -605,13 +802,15 @@ const getAgreement = async (uuid) => {
     });
 };
 
-const createDocumentSubmit = async () => {
-  console.log(docData.value);
+const saveAgreement = async () => {
   pendingModal.value = true;
 
   await $axiosPlugin
-    .post("/agreement/create", {
+    .post("/agreement/save", {
       ...docData.value,
+      uuid: currentAgreement.value
+        ? currentAgreement.value.agreement.uuid
+        : null,
       lang: localeProperties.value.code,
       step: currentStep.value,
     })
@@ -621,9 +820,14 @@ const createDocumentSubmit = async () => {
         currentStep.value = res.data.step + 1;
         modalClass.value = documentSteps[res.data.step].modalSize;
         pendingModal.value = false;
+        scrollBoxCreate.value.scrollToTop(true);
       } else {
-        closeModal("create");
-        getAgreements();
+        closeModal();
+        getAgreements().then(() => {
+          if (res.data.uuid) {
+            getAgreement(res.data.uuid);
+          }
+        });
       }
     })
     .catch((err) => {
@@ -648,8 +852,224 @@ const createDocumentSubmit = async () => {
     });
 };
 
-const openFile = (url) => {
-  window.open(url, "_blank");
+async function signWithNCALayer() {
+  pendingModal.value = true;
+
+  if (!signedDocument.value) {
+    try {
+      await ncaLayer.value.connect();
+    } catch (err) {
+      signError.value = {
+        message: t("errors.failed_to_connect_ncalayer"),
+        description: err.toString(),
+        status: null,
+      };
+      pendingModal.value = false;
+      return;
+    }
+  }
+
+  let base64EncodedSignature;
+
+  const response = await fetch(
+    config.public.apiBase +
+      "/agreement/get_file/" +
+      docMode.value +
+      "/original/" +
+      currentAgreement.value[docMode.value].uuid,
+  );
+
+  const result = await response.json();
+
+  try {
+    base64EncodedSignature = await ncaLayer.value.basicsSignCMS(
+      NCALayerClient.basicsStorageAll,
+      result.data, // здесь поддерживаются String | ArrayBuffer | Blob | File, строки интерпретируются как Base64
+      NCALayerClient.basicsCMSParamsDetached,
+      NCALayerClient.basicsSignerSignAny, // здесь используется ключ подписания
+    );
+  } catch (err) {
+    if (err.canceledByUser) {
+      signError.value = {
+        message: t("errors.canceled_by_user"),
+        description: err.toString(),
+        status: null,
+      };
+    } else {
+      signError.value = {
+        message: "Error",
+        description: err.toString(),
+        status: null,
+      };
+    }
+    pendingModal.value = false;
+  }
+
+  sign(base64EncodedSignature[0] || base64EncodedSignature);
+}
+
+async function getQR() {
+  pendingModal.value = true;
+  await $axiosPlugin
+    .post("/auth/get_qr")
+    .then((res) => {
+      if (res.data.message) {
+        signError.value = {
+          message: t("errors.server_error"),
+          description: res.data.message,
+          status: res.status,
+        };
+        return;
+      }
+
+      sendQR(res.data.dataURL);
+
+      signQR.value = res.data;
+      pendingModal.value = false;
+    })
+    .catch((err) => {
+      signError.value = {
+        message: t("errors.server_error"),
+        description: err?.response.data.message,
+        status: err?.response.status,
+      };
+      pendingModal.value = false;
+      return;
+    });
+}
+
+async function sendQR(dataURL) {
+  const response = await fetch(
+    config.public.apiBase +
+      "/agreement/get_file/" +
+      docMode.value +
+      "/original/" +
+      currentAgreement.value[docMode.value].uuid,
+  );
+  const result = await response.json();
+
+  await $axiosPlugin
+    .post(dataURL, {
+      signMethod: "CMS_SIGN_ONLY",
+      documentsToSign: [
+        {
+          id: 2,
+          meta: [],
+          nameEn: currentAgreement.value.agreement.agreement_type_name,
+          nameRu: currentAgreement.value.agreement.agreement_type_name,
+          nameKz: currentAgreement.value.agreement.agreement_type_name,
+          document: {
+            file: {
+              data: result.data,
+              mime: "@file/pdf",
+            },
+          },
+        },
+      ],
+    })
+    .then((r) => {
+      signWithQR(r.data.signURL);
+    })
+    .catch((err) => {
+      signError.value = {
+        message: t("errors.server_error"),
+        description: err?.response.data.message,
+        status: err?.response.status,
+      };
+      pendingModal.value = false;
+      return;
+    });
+}
+
+async function signWithQR(signURL) {
+  pendingModal.value = true;
+  await $axiosPlugin
+    .get(signURL)
+    .then((r) => {
+      sign(r.data.documentsToSign[0].document.file.data);
+    })
+    .catch((err) => {
+      signError.value = {
+        message: t("errors.server_error"),
+        description: err?.response.data.message,
+        status: err?.response.status,
+      };
+      pendingModal.value = false;
+      return;
+    });
+}
+
+async function sign(signature) {
+  await $axiosPlugin
+    .post("/agreement/sign/" + currentAgreement.value.agreement.uuid, {
+      lang: localeProperties.value.code,
+      mode: docMode.value,
+      signature: signature,
+    })
+    .then((res) => {
+      closeSignModal();
+      getAgreement(currentAgreement.value.agreement.uuid);
+      signedDocument.value = currentAgreement.value.agreement.uuid;
+    })
+    .catch((err) => {
+      if (err.response) {
+        router.push({
+          path: "/error",
+          query: {
+            status: err.response.status,
+            message: err.response.data.message,
+            url: err.request.responseURL,
+          },
+        });
+      } else {
+        router.push("/error");
+      }
+    });
+}
+
+const getCmsFile = async () => {
+  pendingModal.value = true;
+
+  try {
+    const res = await $axiosPlugin.get(
+      "/agreement/cms/" +
+        docMode.value +
+        "/" +
+        currentAgreement.value.agreement.uuid,
+      {
+        responseType: "blob",
+      },
+    );
+
+    const blob = new Blob([res.data], {
+      type: "application/pkcs7-mime",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = currentAgreement.value[docMode.value].uuid + ".cms";
+    document.body.appendChild(link);
+    link.click();
+
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    if (err.response) {
+      router.push({
+        path: "/error",
+        query: {
+          status: err.response.status,
+          message: err.response.data.message,
+          url: err.request.responseURL,
+        },
+      });
+    } else {
+      router.push("/error");
+    }
+  } finally {
+    pendingModal.value = false;
+  }
 };
 
 const showHideAgreementSearchFilter = () => {
@@ -666,7 +1086,7 @@ const resetAgreementSearchFilter = () => {
   getAgreements();
 };
 
-const debounceAgreements = debounceHandler(() => getGroups(), 1000);
+const debounceAgreements = debounceHandler(() => getAgreements(), 1000);
 const debounceReset = debounceHandler(() => resetAgreementSearchFilter(), 500);
 
 onMounted(() => {
@@ -675,4 +1095,12 @@ onMounted(() => {
     pendingPage.value = false;
   });
 });
+
+const clearQR = () => {
+  signQR.value = null;
+};
+
+function reloadPage() {
+  window.location.reload();
+}
 </script>

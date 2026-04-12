@@ -1,13 +1,11 @@
 <template>
   <div class="col-span-12">
     <p class="mb-0">
-      <b>
-        {{
+        <b>{{
           $t("step_num", {
             num: props.num,
           })
-        }}: {{ props.title }}</b
-      >
+        }}:</b> {{ props.title }}
     </p>
   </div>
 </template>

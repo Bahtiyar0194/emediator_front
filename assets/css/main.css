@@ -1570,6 +1570,10 @@ select.error:has(option:checked:disabled) {
     @apply bg-danger border-danger text-white;
 }
 
+.step-item.warning .step-icon{
+    @apply bg-warning border-warning text-white;
+}
+
 .tasks-list-group{
     @apply px-0 mb-0;
 }

@@ -7,98 +7,15 @@
     </div>
   </div>
   <div class="card-body">
-    <div v-if="!error">
-      <div v-if="authQR">
-        <button class="btn btn-light mb-4" @click="authQR = null">
-          <i class="pi pi-arrow-left"></i>
-          {{ $t("back") }}
-        </button>
-
-        <p v-if="localeProperties.code === 'ru'" class="font-medium">
-          Отсканируйте этот QR код с помощью приложений
-          <a
-            href="https://egov.kz/cms/ru/information/mobile/mobile_application"
-            target="_blank"
-            >eGov Mobile или eGov Business</a
-          >
-        </p>
-        <p v-if="localeProperties.code === 'kk'" class="font-medium">
-          <a
-            href="https://egov.kz/cms/ru/information/mobile/mobile_application"
-            target="_blank"
-            >eGov Mobile немесе eGov Business</a
-          >
-          қосымшасы арқылы осы QR-кодты сканерлеп алыңыз
-        </p>
-        <img
-          class="m-auto w-1/3"
-          :src="'data:image/png;base64,' + authQR.qrCode"
-        />
-
-        <div>
-          <div class="flex justify-center items-center relative my-4">
-            <span class="bg-active z-10 px-2">{{ $t("or") }}</span>
-            <hr class="absolute w-full" />
-          </div>
-
-          <p class="font-medium">{{ $t("pages.auth.select_links.title") }}</p>
-
-          <div class="flex flex-col gap-2">
-            <a
-              class="btn btn-sm btn-outline-primary"
-              :href="authQR.eGovMobileLaunchLink"
-              >{{ $t("pages.auth.select_links.item_1") }}</a
-            >
-            <a
-              class="btn btn-sm btn-outline-primary"
-              :href="authQR.eGovBusinessLaunchLink"
-              >{{ $t("pages.auth.select_links.item_2") }}</a
-            >
-          </div>
-        </div>
-      </div>
-      <div v-else>
-        <button
-          class="card p-4 flex flex-col justify-center items-center w-full"
-          @click="getAuthUserData(nonce)"
-        >
-          <img width="90px" src="/img/auth/ncalayer-banner.png" />
-          <span class="font-medium">{{
-            $t("pages.auth.sign_with_ncalayer")
-          }}</span>
-          <span class="text-xs"
-            >({{ $t("pages.auth.sign_with_ncalayer_description") }})</span
-          >
-        </button>
-
-        <div class="flex justify-center items-center relative my-4">
-          <span class="bg-active z-10 px-2">{{ $t("or") }}</span>
-          <hr class="absolute w-full" />
-        </div>
-
-        <button
-          class="card p-4 flex flex-col justify-center items-center w-full"
-          @click="getQR()"
-        >
-          <img width="60px" src="/img/auth/qrcode.svg" />
-          <span class="font-medium">{{
-            $t("pages.auth.sign_with_qr_code")
-          }}</span>
-          <span class="text-xs"
-            >({{ $t("pages.auth.sign_with_qr_code_description") }})</span
-          >
-        </button>
-      </div>
-    </div>
-
-    <div v-else>
-      <p class="font-medium text-danger">{{ error.message }}</p>
-      <p>{{ error.description }}</p>
-      <button @click="reloadPage" class="btn btn-outline-primary">
-        <i class="pi pi-refresh"></i>
-        {{ $t("restart") }}
-      </button>
-    </div>
+    <signButtons
+      :mode="'auth'"
+      :signError="signError"
+      :signQR="authQR"
+      :signWithNCALayer="signWithNCALayer"
+      :getQR="getQR"
+      :clearQR="clearQR"
+      :reloadPage="reloadPage"
+    />
   </div>
 </template>
 
@@ -106,6 +23,7 @@
 import { NCALayerClient } from "ncalayer-js-client";
 import loader from "../components/ui/loader.vue";
 import selectLocale from "../components/ui/selectLocale.vue";
+import signButtons from "../components/sign/signButtons.vue";
 
 const { t, localeProperties } = useI18n();
 const { $axiosPlugin } = useNuxtApp();
@@ -114,7 +32,7 @@ const { login } = useSanctumAuth();
 const authQR = ref(null);
 const nonce = ref(null);
 const pending = ref(true);
-const error = ref(null);
+const signError = ref(null);
 const ncaLayer = ref(new NCALayerClient());
 
 useHead({
@@ -128,15 +46,15 @@ definePageMeta({
 });
 
 onMounted(() => {
-  getToken();
+  getNonce();
 });
 
-async function getToken() {
+async function getNonce() {
   await $axiosPlugin
     .post("/auth/get_token")
     .then((res) => {
       if (res.data.message) {
-        error.value = {
+        signError.value = {
           message: t("errors.signature_was_not_accept"),
           description: res.data.message,
           status: res.status,
@@ -146,7 +64,7 @@ async function getToken() {
       nonce.value = res.data.nonce;
     })
     .catch((err) => {
-      error.value = {
+      signError.value = {
         message: t("errors.server_error"),
         description: err?.response.data.message,
         status: err?.response.status,
@@ -172,11 +90,10 @@ async function auth(nonce, signature) {
         $axiosPlugin.defaults.headers.common["Authorization"] =
           "Bearer " + sanctumToken.value;
       }
-      router.push("/dashboard");
     });
   } catch (err) {
     if (err.response.status) {
-      error.value = {
+      signError.value = {
         message: t("errors.server_error"),
         description: err.response.data.message,
         status: err.response.status,
@@ -186,12 +103,12 @@ async function auth(nonce, signature) {
   }
 }
 
-async function getAuthUserData(nonce) {
+async function signWithNCALayer() {
   pending.value = true;
   try {
     await ncaLayer.value.connect();
   } catch (err) {
-    error.value = {
+    signError.value = {
       message: t("errors.failed_to_connect_ncalayer"),
       description: err.toString(),
       status: null,
@@ -204,15 +121,20 @@ async function getAuthUserData(nonce) {
   try {
     base64EncodedSignature = await ncaLayer.value.basicsSignCMS(
       NCALayerClient.basicsStorageAll,
-      nonce, // здесь поддерживаются String | ArrayBuffer | Blob | File, строки интерпретируются как Base64
+      nonce.value, // здесь поддерживаются String | ArrayBuffer | Blob | File, строки интерпретируются как Base64
       NCALayerClient.basicsCMSParamsDetached,
       NCALayerClient.basicsSignerAuthAny, // здесь используется ключ авторизации
-      localeProperties.value.code
     );
   } catch (err) {
     if (err.canceledByUser) {
-      error.value = {
+      signError.value = {
         message: t("errors.canceled_by_user"),
+        description: err.toString(),
+        status: null,
+      };
+    } else {
+      signError.value = {
+        message: "Error",
         description: err.toString(),
         status: null,
       };
@@ -220,7 +142,7 @@ async function getAuthUserData(nonce) {
     pending.value = false;
   }
 
-  auth(nonce, base64EncodedSignature);
+  auth(nonce.value, base64EncodedSignature[0] || base64EncodedSignature);
 }
 
 async function getQR() {
@@ -229,7 +151,7 @@ async function getQR() {
     .post("/auth/get_qr")
     .then((res) => {
       if (res.data.message) {
-        error.value = {
+        signError.value = {
           message: t("errors.server_error"),
           description: res.data.message,
           status: res.status,
@@ -243,7 +165,7 @@ async function getQR() {
       pending.value = false;
     })
     .catch((err) => {
-      error.value = {
+      signError.value = {
         message: t("errors.server_error"),
         description: err?.response.data.message,
         status: err?.response.status,
@@ -261,9 +183,9 @@ async function sendQR(dataURL) {
         {
           id: 1,
           meta: [],
-          nameEn: "Блок случайных данных для аутентификации",
-          nameRu: "Блок случайных данных для аутентификации",
-          nameKz: "Блок случайных данных для аутентификации",
+          nameEn: "Authentication on portal Emediator.kz",
+          nameRu: "Аутентификация на портале Emediator.kz",
+          nameKz: "Emediator.kz порталында аутентификация өту",
           document: {
             file: {
               data: nonce.value,
@@ -277,7 +199,7 @@ async function sendQR(dataURL) {
       signQR(r.data.signURL);
     })
     .catch((err) => {
-      error.value = {
+      signError.value = {
         message: t("errors.server_error"),
         description: err?.response.data.message,
         status: err?.response.status,
@@ -295,7 +217,7 @@ async function signQR(signURL) {
       auth(nonce.value, r.data.documentsToSign[0].document.file.data);
     })
     .catch((err) => {
-      error.value = {
+      signError.value = {
         message: t("errors.server_error"),
         description: err?.response.data.message,
         status: err?.response.status,
@@ -304,6 +226,10 @@ async function signQR(signURL) {
       return;
     });
 }
+
+const clearQR = () => {
+  authQR.value = null;
+};
 
 function reloadPage() {
   window.location.reload();

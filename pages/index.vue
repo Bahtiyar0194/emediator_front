@@ -9,4 +9,6 @@ useHead({
   title: t('pages.auth.title'),
   meta: [{ name: "description", content: "My amazing site." }],
 });
+
+await navigateTo('/dashboard')
 </script>
