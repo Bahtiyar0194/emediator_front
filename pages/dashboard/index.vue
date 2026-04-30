@@ -6,7 +6,7 @@
   />
   <div class="col-span-12">
     <div class="custom-grid">
-      <div class="col-span-12">
+      <div class="col-span-12" v-if="agreements.total > 0">
         <div class="btn-wrap">
           <button class="btn btn-primary" @click="openModal('create')">
             <i class="pi pi-plus"></i>
@@ -29,7 +29,7 @@
         :class="searchFilter ? 'block' : 'hidden'"
       >
         <stickyBox>
-          <div class="card p-4">
+          <div class="card p-5">
             <h5>{{ $t("pages.documents.agreement.search_filter") }}</h5>
             <form @submit.prevent="debounceReset" ref="searchFormRef">
               <div class="custom-grid">
@@ -109,7 +109,9 @@
                   @click="getAgreement(agreement.uuid)"
                 >
                   <td>
-                    <b>{{ agreement.agreement_type_name }}</b>
+                    <b>{{
+                      agreement.template_name || agreement.agreement_type_name
+                    }}</b>
                   </td>
                   <td>
                     <div class="flex gap-x-2 items-center">
@@ -162,7 +164,29 @@
             :className="'overlay'"
             :showPendingText="true"
           />
-          <p class="mb-0">{{ $t("nothing_was_found_for_your_query") }}</p>
+          <p v-if="agreements.total > 0" class="mb-0">
+            {{ $t("nothing_was_found_for_your_query") }}
+          </p>
+
+          <div v-else class="flex flex-col gap-y-3 items-center py-8 px-4">
+            <img width="120px" src="~/public/img/document.svg" />
+
+            <h3 class="mb-0">
+              {{ $t("welcome") }}, {{ authUser?.first_name || "пользователь" }}!
+            </h3>
+            <p class="text-inactive mb-0">
+              {{ $t("pages.documents.agreement.empty.title") }}
+            </p>
+
+            <button
+              class="btn btn-success"
+              type="button"
+              @click="openModal('create')"
+            >
+              <i class="pi pi-plus"></i>
+              {{ $t("pages.documents.agreement.create") }}
+            </button>
+          </div>
         </alert>
       </div>
     </div>
@@ -180,7 +204,10 @@
     <template v-slot:header_content>
       <h4>
         {{
-          currentAgreement ? currentAgreement.agreement.agreement_type_name : ""
+          currentAgreement
+            ? currentAgreement.agreement.template_name ||
+              currentAgreement.agreement.agreement_type_name
+            : ""
         }}
       </h4>
     </template>
@@ -296,20 +323,28 @@
   >
     <template v-slot:header_content>
       <h4>
-        {{ $t("pages.documents.sign.verify_alt") }}
+        {{ $t("pages.documents.sign.verify.title_alt") }}
       </h4>
     </template>
     <template v-if="currentAgreement" v-slot:body_content>
       <div class="custom-grid">
-        <stepName :num="1" :title="'Скачайте .cms файл на ваше устройство'" />
+        <stepName :num="1" :title="$t('pages.documents.sign.verify.step_1')" />
+
         <div class="col-span-12">
           <button class="btn btn-primary btn-sm" @click="getCmsFile()">
             <i class="pi pi-download"></i>
-            Скачать CMS файл
+            {{ $t("pages.documents.sign.verify.download_file") }}
           </button>
         </div>
 
-        <stepName :num="2" :title="'Откройте сайт https://ezsigner.kz'" />
+        <stepName
+          :num="2"
+          :title="
+            $t('pages.documents.sign.verify.step_2', {
+              site: 'https://ezsigner.kz',
+            })
+          "
+        />
         <div class="col-span-12">
           <a
             class="btn btn-primary btn-sm"
@@ -317,14 +352,11 @@
             target="_blank"
           >
             <i class="pi pi-external-link"></i>
-            Открыть сайт
+            {{ $t("pages.documents.sign.verify.open_site") }}
           </a>
         </div>
 
-        <stepName
-          :num="3"
-          :title="'Выберите скачанный CMS файл для проверки подписей на сайте'"
-        />
+        <stepName :num="3" :title="$t('pages.documents.sign.verify.step_3')" />
       </div>
     </template>
   </modal>
@@ -346,9 +378,10 @@ import userAvatar from "../../components/ui/userAvatar.vue";
 import signButtons from "../../components/sign/signButtons.vue";
 import { debounceHandler } from "../../utils/debounceHandler";
 
-import partyForm from "../../components/documents/partyForm.vue";
+import partiesForm from "../../components/documents/partiesForm.vue";
 import agreementForm from "../../components/documents/agreementForm.vue";
 import selectMediator from "../../components/documents/selectMediator.vue";
+import previewAgreement from "../../components/documents/previewAgreement.vue";
 import { useRouter } from "nuxt/app";
 
 import { NCALayerClient } from "ncalayer-js-client";
@@ -394,6 +427,12 @@ const sortDirection = ref("asc"); // Направление сортировки
 
 const scrollBoxCreate = ref(null);
 
+const originalPoints = ref([]); // Оригинал для сброса
+const points = ref([]); // Копия для мутации и отправки на бэкенд
+const previewDocument = ref([]);
+
+const myTemplates = ref([]);
+
 useHead({
   title: t("pages.dashboard.title"),
   meta: [{ name: "description", content: "My amazing site." }],
@@ -404,60 +443,42 @@ definePageMeta({
   middleware: ["sanctum:auth"],
 });
 
+const partyFormData = {
+  last_name: null,
+  first_name: null,
+  given_name: null,
+  iin: null,
+
+  data: {
+    location_id: null,
+    street: null,
+    house: null,
+    flat: null,
+
+    is_legal: false,
+    legal_form_id: null,
+    post_type_id: null,
+    bin: null,
+    company_name: null,
+    company_location_id: null,
+    company_street: null,
+    company_building: null,
+    company_cabinet: null,
+  },
+};
+
+const createParty = () => structuredClone(partyFormData);
+
 const createDocData = () => ({
-  agreement_parties: [
-    {
-      last_name: null,
-      first_name: null,
-      given_name: null,
-      iin: null,
-
-      data: {
-        location_id: null,
-        street: null,
-        house: null,
-        flat: null,
-
-        is_legal: false,
-        legal_form_id: null,
-        post_type_id: null,
-        bin: null,
-        company_name: null,
-        company_location_id: null,
-        company_street: null,
-        company_building: null,
-        company_cabinet: null,
-      },
-    },
-
-    {
-      last_name: null,
-      first_name: null,
-      given_name: null,
-      iin: null,
-
-      data: {
-        location_id: null,
-        street: null,
-        house: null,
-        flat: null,
-
-        is_legal: false,
-        legal_form_id: null,
-        post_type_id: null,
-        bin: null,
-        company_name: null,
-        company_location_id: null,
-        company_street: null,
-        company_building: null,
-        company_cabinet: null,
-      },
-    },
-  ],
-
+  agreement_parties: [createParty(), createParty()],
   mediator_id: null,
-
   agreement_type_id: null,
+  custom_template: {
+    id: null,
+    new: false,
+    save: false,
+    name: null,
+  },
   agreement_data: {},
   contract_data: {
     prepayment: null,
@@ -493,9 +514,6 @@ const tabs_data = computed(() => [
   },
 ]);
 
-provide("banks", banks);
-provide("colors", colors);
-
 const openModal = (action) => {
   mode.value = action;
 
@@ -510,10 +528,22 @@ const openModal = (action) => {
           (p) => p.is_mediator === 0,
         ),
         agreement_type_id: currentAgreement.value.agreement.agreement_type_id,
-        agreement_data: currentAgreement.value.agreement.data,
+        custom_template: {
+          id: currentAgreement.value.agreement.custom_template_id || null,
+          new: false,
+          save: false,
+          name: currentAgreement.value.agreement.template_name || null,
+        },
+        agreement_data: currentAgreement.value.agreement.data || {},
         contract_data: currentAgreement.value.contract.data,
         mediator_id: currentAgreement.value.agreement.mediator_id,
       };
+
+      if (currentAgreement.value.agreement.points) {
+        points.value = [];
+        points.value = currentAgreement.value.agreement.points;
+      }
+
       agreementModalIsVisible.value = false;
       break;
 
@@ -536,6 +566,8 @@ const closeModal = () => {
   setTimeout(() => {
     docData.value = null;
     mode.value = null;
+    points.value = [];
+    points.value = originalPoints.value;
   }, 200);
 };
 
@@ -645,43 +677,16 @@ const getUserById = async (partyIndex, iin) => {
 
 const documentSteps = [
   {
-    title: t("pages.documents.party_1"),
-    component: partyForm,
+    title: t("pages.documents.parties"),
+    component: partiesForm,
     props: {
       errors,
       locations,
       legalForms,
       posts,
       subjectTypes,
-      partyIndex: 0,
       docData,
       getUserById,
-    },
-    modalSize: "modal-6xl",
-  },
-  {
-    title: t("pages.documents.party_2"),
-    component: partyForm,
-    props: {
-      errors,
-      locations,
-      legalForms,
-      posts,
-      subjectTypes,
-      partyIndex: 1,
-      docData,
-      getUserById,
-    },
-    modalSize: "modal-6xl",
-  },
-  {
-    title: t("pages.documents.form_agreement"),
-    component: agreementForm,
-    props: {
-      errors,
-      agreementTypes,
-      docData,
-      mode,
     },
     modalSize: "modal-6xl",
   },
@@ -694,6 +699,22 @@ const documentSteps = [
       docData,
       mode,
     },
+    modalSize: "modal-4xl",
+  },
+  {
+    title: t("pages.documents.agreement.form"),
+    component: agreementForm,
+    props: {
+      errors,
+      agreementTypes,
+      docData,
+      mode,
+    },
+    modalSize: "modal-6xl",
+  },
+  {
+    title: t("pages.documents.agreement.preview"),
+    component: previewAgreement,
     modalSize: "modal-4xl",
   },
 ];
@@ -721,6 +742,11 @@ const getAttributes = async () => {
       banks.value = res.data.banks;
       colors.value = res.data.colors;
       mediators.value = res.data.mediators;
+
+      const pointsData = res.data.typical_points;
+
+      originalPoints.value = structuredClone(pointsData);
+      points.value = structuredClone(pointsData);
     })
     .catch((err) => {
       if (err.response) {
@@ -808,6 +834,7 @@ const saveAgreement = async () => {
   await $axiosPlugin
     .post("/agreement/save", {
       ...docData.value,
+      points: points.value,
       uuid: currentAgreement.value
         ? currentAgreement.value.agreement.uuid
         : null,
@@ -821,6 +848,10 @@ const saveAgreement = async () => {
         modalClass.value = documentSteps[res.data.step].modalSize;
         pendingModal.value = false;
         scrollBoxCreate.value.scrollToTop(true);
+
+        if (res.data.preview) {
+          previewDocument.value = res.data.preview;
+        }
       } else {
         closeModal();
         getAgreements().then(() => {
@@ -851,6 +882,61 @@ const saveAgreement = async () => {
       }
     });
 };
+
+const getMyAgreementTemplates = async () => {
+  pendingModal.value = true;
+
+  await $axiosPlugin
+    .get("/agreement/get_my_templates")
+    .then((res) => {
+      myTemplates.value = res.data;
+      pendingModal.value = false;
+    })
+    .catch((err) => {
+      if (err.response) {
+        router.push({
+          path: "/error",
+          query: {
+            status: err.response.status,
+            message: err.response.data.message,
+            url: err.request.responseURL,
+          },
+        });
+      } else {
+        router.push("/error");
+      }
+    });
+};
+
+const selectTemplate = () => {
+  pendingModal.value = true;
+  setTimeout(() => {
+    const template = myTemplates.value.find(
+      (t) => docData.value.custom_template.id === t.template_id,
+    );
+
+    if (template && template.data) {
+      points.value = [];
+      points.value = template.data;
+
+      setTimeout(() => {
+        pendingModal.value = false;
+      }, 500);
+
+      return;
+    }
+
+    pendingModal.value = false;
+  }, 500);
+};
+
+provide("banks", banks);
+provide("colors", colors);
+provide("previewDocument", previewDocument);
+provide("points", points);
+provide("myTemplates", myTemplates);
+provide("selectTemplate", selectTemplate);
+provide("getMyAgreementTemplates", getMyAgreementTemplates);
 
 async function signWithNCALayer() {
   pendingModal.value = true;
@@ -948,6 +1034,10 @@ async function sendQR(dataURL) {
   );
   const result = await response.json();
 
+  const agreement_name =
+    currentAgreement.value.agreement.template_name ||
+    currentAgreement.value.agreement.agreement_type_name;
+
   await $axiosPlugin
     .post(dataURL, {
       signMethod: "CMS_SIGN_ONLY",
@@ -955,9 +1045,9 @@ async function sendQR(dataURL) {
         {
           id: 2,
           meta: [],
-          nameEn: currentAgreement.value.agreement.agreement_type_name,
-          nameRu: currentAgreement.value.agreement.agreement_type_name,
-          nameKz: currentAgreement.value.agreement.agreement_type_name,
+          nameEn: agreement_name,
+          nameRu: agreement_name,
+          nameKz: agreement_name,
           document: {
             file: {
               data: result.data,

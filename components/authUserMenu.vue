@@ -1,5 +1,5 @@
 <template>
-  <dropdownMenu>
+  <dropdownMenu :dropdownArrow="true">
     <template v-slot:btn_content>
       <div class="flex items-center gap-x-1 sm:gap-x-1.5">
         <userAvatar

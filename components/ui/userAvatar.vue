@@ -1,5 +1,5 @@
 <template>
-    <div class="rounded-full border-inactive w-fit h-fit" :class="props.padding ? ('p-' + props.padding) : 'p-0.5'">
+    <div class="rounded-full border-inactive w-fit h-fit" :style="wrapperStyle">
         <template v-if="props.isChecked && props.isChecked === true">
             <div class="rounded-full bg-success flex items-center justify-center text-white overflow-hidden"
                 :class="props.className ? props.className : ''">
@@ -41,5 +41,15 @@ const props = defineProps({
         type: Boolean,
         required: false
     }
+});
+
+const wrapperStyle = computed(() => {
+    const paddingValue = Number(props.padding);
+
+    return {
+        padding: Number.isFinite(paddingValue) && paddingValue >= 0
+            ? `${paddingValue * 0.25}rem`
+            : "0.125rem",
+    };
 });
 </script>

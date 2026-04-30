@@ -38,10 +38,11 @@
 
             <button
               class="btn btn-success btn-sm"
+              v-if="canVerify()"
               @click="props.openVerifySignModal(props.type)"
             >
               <i class="pi pi-verified"></i>
-              {{ $t("pages.documents.sign.verify") }}
+              {{ $t("pages.documents.sign.verify.title") }}
             </button>
             <!-- <button
               class="btn btn-success"
@@ -57,8 +58,6 @@
 
               {{ $t("pages.documents.agreement.open") }}
             </button> -->
-
-            <!--Не забудь потом кнопку снизу изолировать-->
 
             <button
               v-if="canEdit()"
@@ -121,6 +120,10 @@ const canSign = () =>
   props.document.parties.some(
     (p) => p.iin === authUser.value.iin && !p.sigex_sign_id,
   );
+
+const canVerify = () => {
+  return props.document.parties.some((p) => p.sigex_sign_id);
+};
 
 const canEdit = () => {
   return props.document.parties.some((p) => !p.sigex_sign_id);

@@ -175,7 +175,7 @@ const props = defineProps({
   },
 });
 
-const { errors, mode, docData } = toRefs(props);
+const { errors, docData } = toRefs(props);
 
 const createChild = () => ({
   last_name: null,

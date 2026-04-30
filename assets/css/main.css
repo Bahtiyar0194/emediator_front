@@ -11,6 +11,27 @@
     }
 }
 
+@keyframes highlightFade {
+  0% {
+    background-color: #fff3cd;
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes fadeOutScale {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    background-color: rgba(255, 0, 0, 0.189);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
 @keyframes wobble {
     0% {
         transform: translateX(0px);
@@ -173,6 +194,58 @@
     font-style: italic;
 }
 
+:root {
+    color-scheme: light;
+    --page-bg: #f4f7fb;
+    --page-bg-secondary: #eaf0f8;
+    --surface-color: rgb(255 255 255 / 100%);
+    --surface-muted: rgb(248 250 252 / 100%);
+    --surface-elevated: rgb(255 255 255 / 97%);
+    --border-color: rgb(148 163 184 / 18%);
+    --border-strong: rgb(148 163 184 / 30%);
+    --text-color: #172033;
+    --text-muted: #66758f;
+    --shadow-soft: 0 20px 45px -28px rgb(15 23 42 / 35%);
+    --shadow-card: 0 22px 55px -30px rgb(15 23 42 / 30%);
+    --accent-color: #56a4ff;
+    --accent-soft: rgb(86 164 255 / 14%);
+    --focus-ring: rgb(86 164 255 / 24%);
+    --shell-header-height: 4.0625rem;
+    --shell-sidebar-width: 4rem;
+    --shell-content-gap: 0.75rem;
+    --shell-content-top-offset: 1.25rem;
+    --shell-safe-top: env(safe-area-inset-top, 0px);
+    --shell-safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.dark {
+    color-scheme: dark;
+    --page-bg: #09111f;
+    --page-bg-secondary: #111c2e;
+    --surface-color: rgb(15 23 42 / 86%);
+    --surface-muted: rgb(15 23 42 / 94%);
+    --surface-elevated: rgb(30 41 59 / 92%);
+    --border-color: rgb(148 163 184 / 18%);
+    --border-strong: rgb(148 163 184 / 28%);
+    --text-color: #f8fafc;
+    --text-muted: #94a3b8;
+    --shadow-soft: 0 24px 60px -35px rgb(2 6 23 / 80%);
+    --shadow-card: 0 28px 80px -40px rgb(2 6 23 / 88%);
+    --accent-color: #7ab8ff;
+    --accent-soft: rgb(122 184 255 / 14%);
+    --focus-ring: rgb(122 184 255 / 24%);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+html,
+body,
+#__nuxt {
+    min-height: 100%;
+}
+
 /*DEFAULT THEME*/
 
 .bg-corp {
@@ -195,6 +268,7 @@
 
 .bg-active {
     @apply bg-white dark:bg-slate-800;
+    background-color: var(--surface-color);
 }
 
 .bg-active-inverse {
@@ -203,6 +277,7 @@
 
 .bg-inactive {
     @apply bg-gray-100 dark:bg-slate-900;
+    background-color: var(--surface-muted);
 }
 
 .bg-inactive-inverse {
@@ -239,6 +314,7 @@
 
 .border-active{
     @apply border border-slate-800 dark:border-white;
+    border-color: var(--border-strong);
 }
 
 .border-t-active{
@@ -259,6 +335,7 @@
 
 .border-inactive{
     @apply border border-gray-300 dark:border-slate-700;
+    border-color: var(--border-color);
 }
 
 .border-t-inactive{
@@ -295,6 +372,7 @@
 
 .text-active {
     @apply text-dark-500 dark:text-white;
+    color: var(--text-color);
 }
 
 .fill-active{
@@ -315,6 +393,7 @@
 
 .text-inactive {
     @apply text-neutral-500 dark:text-slate-500;
+    color: var(--text-muted);
 }
 
 .text-success{
@@ -354,21 +433,27 @@
 }
 
 ::-webkit-scrollbar {
-    width: 3px;
+    width: 8px;
     @apply bg-inactive;
-    height: 90%;
+    height: 8px;
 }
 ::-webkit-scrollbar-thumb {
-    width: 3px;
+    width: 8px;
     @apply bg-corp;
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
 }
 ::-webkit-scrollbar:horizontal{
-    height: 3px;
+    height: 8px;
     @apply bg-inactive;
 }
 ::-webkit-scrollbar-thumb:horizontal{
-    height: 3px;
+    height: 8px;
     @apply bg-corp;
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
 }
 
 .scroll-fade {
@@ -447,18 +532,46 @@
 body {
     @apply bg-inactive text-active font-normal duration-200;
     font-family: 'Roboto', sans-serif;
+    color: var(--text-color);
+    background-color: var(--page-bg);
+    background-image:
+        radial-gradient(circle at top left, rgb(86 164 255 / 16%), transparent 28%),
+        radial-gradient(circle at top right, rgb(59 130 246 / 12%), transparent 22%),
+        linear-gradient(180deg, var(--page-bg-secondary) 0%, var(--page-bg) 26%, var(--page-bg) 100%);
+    background-attachment: fixed;
+    position: relative;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    line-height: 1.6;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 15% 20%, rgb(255 255 255 / 28%), transparent 22%),
+        radial-gradient(circle at 85% 12%, rgb(255 255 255 / 16%), transparent 18%);
+    opacity: 0.7;
+    z-index: -1;
 }
 
 h1, h2, h3, h4, h5, h6, .title-font {
     font-family: 'Roboto', sans-serif;
+    letter-spacing: -0.02em;
+    color: var(--text-color);
 }
 
 a {
     @apply cursor-pointer duration-200 text-corp;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.18em;
 }
 
 a:hover{
     @apply text-active;
+    text-decoration-color: currentColor;
 }
 
 .link{
@@ -470,7 +583,8 @@ a:hover{
 }
 
 p {
-    @apply mb-3
+    @apply mb-3;
+    color: inherit;
 }
 
 h1,
@@ -543,6 +657,10 @@ hr{
 
 blockquote{
     @apply pl-4 border-corp border-l-2;
+    background-color: var(--accent-soft);
+    border-radius: 1rem;
+    padding: 1rem 1.25rem;
+    box-shadow: inset 0 0 0 1px rgb(86 164 255 / 8%);
 }
 
 input[type=number]::-webkit-inner-spin-button, 
@@ -559,6 +677,10 @@ input[type=text]:disabled, input[type=number]:disabled {
 
 .table{
     @apply w-full relative overflow-x-auto rounded-xl shadow-md flex border-inactive;
+    background-color: var(--surface-color);
+    border-color: var(--border-color);
+    box-shadow: var(--shadow-card);
+    backdrop-filter: blur(18px);
 }
 
 .table:has(.overlay) {
@@ -575,18 +697,25 @@ input[type=text]:disabled, input[type=number]:disabled {
 
 .table table thead{
     @apply border-b-inactive bg-active;
+    background-color: var(--surface-muted);
 }
 
 .table table tbody tr{
     @apply bg-active;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .table table tbody tr:nth-child(odd){
     @apply bg-inactive;
+    background-color: color-mix(in srgb, var(--surface-muted) 76%, transparent);
 }
 
 .table table thead tr th{
     @apply px-4 py-3 text-left font-medium tracking-wider;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
 .table.selectable table tbody tr{
@@ -607,6 +736,7 @@ input[type=text]:disabled, input[type=number]:disabled {
 
 .table table tbody tr td{
     @apply px-4 py-3;
+    border-color: var(--border-color);
 }
 
 .table.table-sm table thead tr th{
@@ -649,6 +779,26 @@ form code{
 pre{
     @apply rounded-xl;
     padding: 0.75rem !important;
+    background-color: var(--surface-elevated);
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--border-color);
+}
+
+::selection {
+    background: rgb(86 164 255 / 24%);
+    color: var(--text-color);
+}
+
+button,
+input,
+select,
+textarea {
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
 }
 
 button,
@@ -690,12 +840,14 @@ select.error:has(option:checked:disabled) {
 
 .form-group {
     @apply mb-5 relative border-t-0 border-l-0 border-r-0 border-b border-corp;
+    border-color: var(--border-strong);
 }
 
 .form-group > input, 
 .form-group > select, 
 .form-group > textarea {
     @apply border-0 bg-transparent w-full text-active py-3 pl-8 pr-2 relative z-10; 
+    color: var(--text-color);
 }
 
 .form-group.input-group > select{
@@ -704,10 +856,11 @@ select.error:has(option:checked:disabled) {
 
 .form-group > label {
     @apply absolute left-8 top-3 pointer-events-none duration-200 bg-inherit text-inactive;
+    color: var(--text-muted);
 }
 
 .form-group > label.label-error{
-    @apply text-danger -top-2.5 text-xs left-0;
+    @apply text-danger font-medium -top-2.5 text-xs left-0;
 }
 
 .form-group > input:focus ~ label,
@@ -727,7 +880,7 @@ select.error:has(option:checked:disabled) {
 .form-group > textarea:focus ~ label.label-error,
 .form-group > textarea:not(:placeholder-shown) ~ label.label-error
 {
-    @apply text-danger -top-2.5 text-xs left-0;
+    @apply text-danger -top-2.5 text-xs left-0 font-medium;
 }
 
 .form-group .show-password, .form-group .clear
@@ -737,16 +890,23 @@ select.error:has(option:checked:disabled) {
 
 .form-group-border {
     @apply relative border-2 border-corp rounded-xl;
+    background-color: var(--surface-color);
+    border-color: var(--border-color);
+    border-radius: 1rem;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 10%);
 }
 
 .form-group-border.active{
     @apply border-inactive;
+    border-color: var(--border-strong);
 }
 
 .form-group-border > input, 
 .form-group-border > select, 
 .form-group-border > textarea {
     @apply border-0 bg-transparent w-full text-active py-2 pl-8 pr-2.5 relative z-10;
+    color: var(--text-color);
+    min-height: 3rem;
 }
 
 .form-group-border.input-group > select{
@@ -764,11 +924,12 @@ select.error:has(option:checked:disabled) {
 }
 
 .form-group-border > label {
-    @apply absolute left-9 top-2 pointer-events-none duration-200 bg-inherit text-inactive whitespace-nowrap;
+    @apply absolute left-9 top-2.5 pointer-events-none duration-200 bg-inherit text-inactive whitespace-nowrap;
+    color: var(--text-muted);
 }
 
 .form-group-border > label.label-error{
-    @apply text-danger -top-2.5 text-xs left-2 bg-active px-1 mr-2;
+    @apply text-danger font-medium -top-2.5 text-xs left-2 bg-active px-1 mr-2;
 }
 
 .form-group-border.label-inactive > label.label-error{
@@ -827,7 +988,7 @@ select.error:has(option:checked:disabled) {
 }
 
 .form-group-border > i{
-    @apply absolute top-3 left-2.5 text-inactive z-20;
+    @apply absolute top-3.5 left-2.5 text-inactive z-20;
 }
 
 .form-group-border > i.bi{
@@ -859,7 +1020,7 @@ select.error:has(option:checked:disabled) {
 }
 
 .custom-radio-button{
-    @apply border border-corp rounded-xl px-4 py-2 duration-200  cursor-pointer
+    @apply border border-inactive rounded-xl px-4 py-2 duration-200  cursor-pointer
 }
 
 .custom-radio-button i {
@@ -867,11 +1028,15 @@ select.error:has(option:checked:disabled) {
 }
 
 .custom-radio-button:has(input:checked) {
-  @apply bg-corp text-white;
+  @apply bg-corp border-corp text-white;
 }
 
 .custom-radio-button:has(input:checked) i {
   @apply inline-block;
+}
+
+.custom-radio-button.success:has(input:checked) {
+  @apply bg-success border-success text-white;
 }
 
 .custom-radio, 
@@ -891,7 +1056,7 @@ select.error:has(option:checked:disabled) {
 .custom-radio > span, 
 .custom-radio-checkbox > span,
 .custom-checkbox > span {
-    @apply inline-flex items-center select-none cursor-pointer;
+    @apply inline-flex select-none cursor-pointer  leading-none;
 }
   
 .custom-radio > span::before,
@@ -964,7 +1129,7 @@ select.error:has(option:checked:disabled) {
 .custom-radio > input:checked + span,
 .custom-radio-checkbox > input:checked + span,
 .custom-checkbox > input:checked + span{
-    @apply text-corp cursor-default;
+    @apply cursor-default;
 }
 
 .custom-radio > input:checked + span.error,
@@ -1012,6 +1177,20 @@ select.error:has(option:checked:disabled) {
 
 .btn {
     @apply rounded-xl px-4 py-2 duration-200 text-center text-base w-fit flex justify-center items-center gap-x-1; 
+    font-weight: 500;
+    border: 1px solid transparent;
+    box-shadow: 0 10px 24px -18px rgb(15 23 42 / 45%);
+    backdrop-filter: blur(10px);
+    transform: translateY(0);
+}
+
+.btn:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 16px 30px -20px rgb(15 23 42 / 38%);
+}
+
+.btn:active{
+    transform: translateY(0);
 }
 
 .btn.btn-square{
@@ -1084,22 +1263,27 @@ select.error:has(option:checked:disabled) {
 
 .btn-transparent{
     @apply text-active;
+    border-color: transparent;
 }
 
 .btn-active{
     @apply border-active text-active;
+    background-color: var(--surface-color);
 }
 
 .btn-inactive{
     @apply border-inactive bg-inactive text-active;
+    background-color: var(--surface-muted);
 }
 
 .btn-primary{
     @apply bg-corp border-corp border text-white;
+    box-shadow: 0 18px 30px -18px rgb(86 164 255 / 55%);
 }
 
 .btn-outline-primary{
     @apply bg-transparent border border-corp text-corp;
+    background-color: rgb(255 255 255 / 55%);
 }
 
 .btn-outline-primary:hover{
@@ -1108,6 +1292,7 @@ select.error:has(option:checked:disabled) {
 
 .btn-light{
     @apply bg-active text-active border-inactive border;
+    box-shadow: var(--shadow-soft);
 }
 
 .btn-light:hover{
@@ -1251,6 +1436,10 @@ select.error:has(option:checked:disabled) {
 
 .alert{
     @apply p-6 text-center text-inactive rounded-xl relative overflow-hidden; 
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 1.25rem;
+    box-shadow: var(--shadow-soft);
 }
 
 .alert:has(.overlay) {
@@ -1283,6 +1472,8 @@ select.error:has(option:checked:disabled) {
 
 .note{
     @apply pl-3 py-3 px-9 border-inactive bg-active rounded-xl relative;
+    border-color: var(--border-color);
+    box-shadow: var(--shadow-soft);
 }
 
 .note button {
@@ -1342,7 +1533,12 @@ select.error:has(option:checked:disabled) {
 }
 
 .card {
-    @apply bg-active rounded-xl max-w-full relative border-inactive overflow-hidden shadow-lg;
+    @apply bg-active rounded-xl max-w-full relative border-inactive overflow-hidden overflow-y-hidden shadow-lg;
+    background-color: var(--surface-color);
+    border-color: var(--border-color);
+    border-radius: 1.35rem;
+    box-shadow: var(--shadow-card);
+    backdrop-filter: blur(20px);
 }
 
 .card.card-sm{
@@ -1359,6 +1555,7 @@ select.error:has(option:checked:disabled) {
 
 .card.card-inactive{
     @apply bg-inactive;
+    background-color: var(--surface-muted);
 }
 
 .card-header{
@@ -1470,6 +1667,10 @@ select.error:has(option:checked:disabled) {
     @apply bg-active rounded-xl border-inactive px-4;
 }
 
+.list-group.inactive{
+    @apply bg-inactive;
+}
+
 .list-group.sm{
     @apply px-3;
 }
@@ -1531,7 +1732,7 @@ select.error:has(option:checked:disabled) {
 }
 
 .step-item{
-    @apply flex items-center justify-center flex-col gap-y-2 text-center font-medium text-xs md:text-base w-min md:w-auto z-10 bg-active text-inactive px-2 lg:px-4;
+    @apply bg-active flex items-center justify-center flex-col gap-y-2 text-center font-medium text-xs md:text-base w-min md:w-auto z-10 text-inactive px-2 lg:px-4;
 }
 
 .step-item.xs{
@@ -1601,6 +1802,10 @@ select.error:has(option:checked:disabled) {
 
 .modal{
     @apply bg-active p-6 shadow-md rounded-xl duration-200 w-full relative overflow-hidden;
+    border: 1px solid var(--border-color);
+    border-radius: 1.5rem;
+    box-shadow: 0 30px 90px -45px rgb(15 23 42 / 60%);
+    backdrop-filter: blur(22px);
     transform: translateY(-2rem)
 }
 
@@ -1689,7 +1894,7 @@ select.error:has(option:checked:disabled) {
 }
 
 .breadcrumb{
-    @apply text-inactive flex flex-wrap list-none px-0;
+    @apply text-inactive flex flex-wrap list-none px-0 select-none;
 }
 
 .breadcrumb a{
@@ -1702,14 +1907,16 @@ select.error:has(option:checked:disabled) {
 }
 
 .db__header{
-    @apply fixed top-0 left-0 w-full bg-active flex justify-between items-center px-3 border-b-inactive z-20;
-    height: 65px;
+    @apply fixed top-0 left-0 w-full bg-active flex justify-between items-center px-3 z-20;
+    min-height: calc(var(--shell-header-height) + var(--shell-safe-top));
+    padding-top: var(--shell-safe-top);
 }
 
 .db__sidebar__menu{
-    @apply bg-active px-3.5 fixed z-50 border-r-inactive;
-    height: calc(100vh - 64px);
-    top: 64px;
+    @apply bg-active px-3.5 fixed z-50;
+    top: calc(var(--shell-header-height) + var(--shell-safe-top));
+    min-height: calc(100vh - (var(--shell-header-height) + var(--shell-safe-top)));
+    min-height: calc(100dvh - (var(--shell-header-height) + var(--shell-safe-top)));
 }
 
 .db__sidebar__menu a{
@@ -1741,12 +1948,16 @@ select.error:has(option:checked:disabled) {
 }
 
 .db__content{
-    @apply pb-3 pr-3 pl-16 w-full relative overflow-auto h-screen;
-    padding-top: 85px;
+    @apply pb-3 pr-3 pl-16 w-full relative overflow-auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-top: calc(var(--shell-header-height) + var(--shell-safe-top) + var(--shell-content-top-offset));
+    padding-left: calc(var(--shell-sidebar-width) + var(--shell-content-gap));
 }
 
 .db__footer__menu{
     @apply py-3 pr-3 pl-14 bg-active fixed bottom-0 left-0 right-0 border-t-inactive flex justify-between md:justify-center;
+    padding-bottom: calc(0.75rem + var(--shell-safe-bottom));
 }
 
 .db__footer__menu button{
@@ -1784,6 +1995,10 @@ select.error:has(option:checked:disabled) {
 
 .dropdown-menu, .multiple-select-menu-wrap{
     @apply hidden absolute z-30 rounded-xl shadow-xl bg-active text-sm border-inactive px-4 my-2 w-max;
+    background-color: var(--surface-elevated);
+    border-color: var(--border-color);
+    box-shadow: var(--shadow-card);
+    backdrop-filter: blur(18px);
 }
 
 .dropdown-menu.no-absolute{
@@ -2110,6 +2325,14 @@ select.error:has(option:checked:disabled) {
 
 .dots span:nth-child(3) {
   animation-delay: 0.6s;
+}
+
+.highlight {
+  animation: highlightFade 3s ease;
+}
+
+.removing {
+  animation: fadeOutScale 1s ease forwards;
 }
 
 .draggable {

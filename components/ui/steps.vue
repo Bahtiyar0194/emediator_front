@@ -1,6 +1,6 @@
 <template>
   <client-only>
-    <div class="steps">
+    <div class="steps select-none">
       <progressBar
         :progressPercentage="progressPercentage"
         :className="'success sm'"

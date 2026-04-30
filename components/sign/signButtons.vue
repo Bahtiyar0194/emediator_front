@@ -28,8 +28,8 @@
       />
 
       <div>
-        <div class="flex justify-center items-center relative my-4">
-          <span class="bg-active z-10 px-2">{{ $t("or") }}</span>
+        <div class="flex justify-center items-center relative my-6">
+          <span class="bg-inactive z-10 px-2">{{ $t("or") }}</span>
           <hr class="absolute w-full" />
         </div>
 
@@ -63,8 +63,8 @@
         >
       </button>
 
-      <div class="flex justify-center items-center relative my-4">
-        <span class="bg-active z-10 px-2">{{ $t("or") }}</span>
+      <div class="flex justify-center items-center relative my-6">
+        <span class="bg-inactive z-10 px-2">{{ $t("or") }}</span>
         <hr class="absolute w-full" />
       </div>
 

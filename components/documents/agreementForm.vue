@@ -6,7 +6,7 @@
       v-for="(level, index) in agreementTypeSelections"
       :key="index"
       class="col-span-12"
-      :class="'lg:col-span-' + 12 / agreementTypeSelections.length"
+      :class="getAgreementTypeColumnClass(agreementTypeSelections.length)"
     >
       <div class="form-group-border select active label-active">
         <i class="pi pi-file"></i>
@@ -63,6 +63,22 @@ const props = defineProps({
 });
 
 const { errors, agreementTypes, docData, mode } = toRefs(props);
+
+const getAgreementTypeColumnClass = (selectionCount) => {
+  if (selectionCount <= 1) {
+    return "lg:col-span-12";
+  }
+
+  if (selectionCount === 2) {
+    return "lg:col-span-6";
+  }
+
+  if (selectionCount === 3) {
+    return "lg:col-span-4";
+  }
+
+  return "lg:col-span-3";
+};
 
 const {
   selections: agreementTypeSelections,
