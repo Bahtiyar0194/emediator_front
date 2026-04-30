@@ -25,12 +25,12 @@
         </TransitionGroup>
       </div>
 
-      <div class="col-span-12">
+      <!-- <div class="col-span-12">
         <button type="button" class="btn btn-sm btn-outline-success">
           <i class="pi pi-plus"></i>
           {{ $t("pages.documents.point.add") }}
         </button>
-      </div>
+      </div> -->
 
       <div v-if="mode === 'create'" class="col-span-12">
         <div class="custom-grid">

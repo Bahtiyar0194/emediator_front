@@ -246,6 +246,10 @@ export default {
         select_an_agreement_type: 'Келісім түрін таңдаңыз',
     },
 
+    site: {
+        description: 'Медиативтік келісімге тұру'
+    },
+
     pages: {
         home: {
             title: 'Басты бет',

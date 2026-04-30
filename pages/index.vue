@@ -7,7 +7,7 @@ const { t } = useI18n();
 
 useHead({
   title: t('pages.auth.title'),
-  meta: [{ name: "description", content: "My amazing site." }],
+  meta: [{ name: "description", content: t("site.description") }],
 });
 
 await navigateTo('/dashboard')

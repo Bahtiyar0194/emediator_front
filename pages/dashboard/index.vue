@@ -712,11 +712,11 @@ const documentSteps = [
     },
     modalSize: "modal-6xl",
   },
-  {
-    title: t("pages.documents.agreement.preview"),
-    component: previewAgreement,
-    modalSize: "modal-4xl",
-  },
+  // {
+  //   title: t("pages.documents.agreement.preview"),
+  //   component: previewAgreement,
+  //   modalSize: "modal-4xl",
+  // },
 ];
 
 const currentStep = ref(1);

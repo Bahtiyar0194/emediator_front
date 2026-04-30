@@ -244,6 +244,10 @@ export default {
         select_an_agreement_type: 'Выберите тип соглашения'
     },
 
+    site: {
+        description: 'Заключение медиативного соглашения'
+    },
+
     pages: {
         home: {
             title: 'Главная страница',
