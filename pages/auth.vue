@@ -189,7 +189,7 @@ async function sendQR(dataURL) {
           document: {
             file: {
               data: nonce.value,
-              mime: "",
+              mime: "@file/pdf",
             },
           },
         },
