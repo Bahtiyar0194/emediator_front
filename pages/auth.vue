@@ -179,7 +179,7 @@ async function sendQR(dataURL) {
   alert(nonce.value)
   await $axiosPlugin
     .post(dataURL, {
-      signMethod: "CMS_SIGN_ONLY",
+      signMethod: "CMS_WITH_DATA",
       documentsToSign: [
         {
           id: 1,
