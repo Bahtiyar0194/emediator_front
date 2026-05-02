@@ -176,6 +176,7 @@ async function getQR() {
 }
 
 async function sendQR(dataURL) {
+  alert(nonce.value)
   await $axiosPlugin
     .post(dataURL, {
       signMethod: "CMS_SIGN_ONLY",
@@ -189,7 +190,7 @@ async function sendQR(dataURL) {
           document: {
             file: {
               data: nonce.value,
-              mime: "@file/pdf",
+              mime: "",
             },
           },
         },
