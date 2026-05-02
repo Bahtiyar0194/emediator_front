@@ -176,7 +176,6 @@ async function getQR() {
 }
 
 async function sendQR(dataURL) {
-  alert(nonce.value)
   await $axiosPlugin
     .post(dataURL, {
       signMethod: "CMS_WITH_DATA",
@@ -215,6 +214,7 @@ async function signQR(signURL) {
   await $axiosPlugin
     .get(signURL)
     .then((r) => {
+      alert(r.data.documentsToSign[0].document.file.data);
       auth(nonce.value, r.data.documentsToSign[0].document.file.data);
     })
     .catch((err) => {
