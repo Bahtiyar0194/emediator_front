@@ -196,7 +196,7 @@
                     type="text"
                     inputmode="numeric"
                     pattern="^\d+(\/\d+)?$"
-                    placeholder="22/1"
+                    placeholder=" "
                   />
                   <label
                     :class="{
@@ -449,7 +449,7 @@
                     "
                     inputmode="numeric"
                     pattern="^\d+(\/\d+)?$"
-                    placeholder="22/1"
+                    placeholder=" "
                   />
                   <label
                     :class="{
