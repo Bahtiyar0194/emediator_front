@@ -93,9 +93,10 @@ async function auth(nonce, signature) {
     });
   } catch (err) {
     if (err.response.status) {
+      alert(err)
       signError.value = {
         message: t("errors.server_error"),
-        description: err.response,
+        description: err.response.data.message,
         status: err.response.status,
       };
       pending.value = false;
