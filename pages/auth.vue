@@ -95,7 +95,7 @@ async function auth(nonce, signature) {
     if (err.response.status) {
       signError.value = {
         message: t("errors.server_error"),
-        description: err.response.data.message,
+        description: err.response,
         status: err.response.status,
       };
       pending.value = false;
