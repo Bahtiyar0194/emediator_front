@@ -93,7 +93,7 @@ async function auth(nonce, signature) {
     });
   } catch (err) {
     if (err.response.status) {
-      alert(err)
+      alert(err);
       signError.value = {
         message: t("errors.server_error"),
         description: err.response.data.message,
@@ -200,6 +200,7 @@ async function sendQR(dataURL) {
       signQR(r.data.signURL);
     })
     .catch((err) => {
+      alert("send qr " + err);
       signError.value = {
         message: t("errors.server_error"),
         description: err?.response.data.message,
@@ -218,6 +219,7 @@ async function signQR(signURL) {
       auth(nonce.value, r.data.documentsToSign[0].document.file.data);
     })
     .catch((err) => {
+      alert("sign qr " + err);
       signError.value = {
         message: t("errors.server_error"),
         description: err?.response.data.message,
