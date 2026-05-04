@@ -1099,6 +1099,7 @@ async function sign(signature) {
     .then((res) => {
       closeSignModal();
       getAgreement(currentAgreement.value.agreement.uuid);
+      getAgreements();
       signedDocument.value = currentAgreement.value.agreement.uuid;
     })
     .catch((err) => {

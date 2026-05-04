@@ -29,7 +29,7 @@
           <div class="btn-wrap">
             <button
               v-if="canSign()"
-              class="btn btn-success btn-sm"
+              class="btn btn-outline-success"
               @click="props.openSignModal(props.type)"
             >
               <i class="pi pi-check"></i>
@@ -37,7 +37,7 @@
             </button>
 
             <button
-              class="btn btn-success btn-sm"
+              class="btn btn-outline-success"
               v-if="canVerify()"
               @click="props.openVerifySignModal(props.type)"
             >
@@ -61,7 +61,7 @@
 
             <button
               v-if="canEdit()"
-              class="btn btn-light btn-sm"
+              class="btn btn-light"
               @click="props.openModal('edit')"
             >
               <i class="pi pi-pencil"></i>
@@ -122,7 +122,7 @@ const canSign = () =>
   );
 
 const canVerify = () => {
-  return props.document.parties.some((p) => p.sigex_sign_id);
+  return !props.document.parties.find((p) => p.sigex_sign_id === null);
 };
 
 const canEdit = () => {
