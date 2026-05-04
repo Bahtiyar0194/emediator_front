@@ -212,14 +212,13 @@ async function sendQR(dataURL) {
 }
 
 async function signQR(signURL) {
-  pending.value = true;
   await $axiosPlugin
     .get(signURL)
     .then((r) => {
       auth(nonce.value, r.data.documentsToSign[0].document.file.data);
     })
     .catch((err) => {
-      alert("sign qr " + signUrl);
+      alert(signUrl);
       signError.value = {
         message: t("errors.server_error"),
         description: err?.response.data.message,
