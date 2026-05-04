@@ -219,7 +219,7 @@ async function signQR(signURL) {
       auth(nonce.value, r.data.documentsToSign[0].document.file.data);
     })
     .catch((err) => {
-      alert("sign qr " + err);
+      alert("sign qr " + signUrl);
       signError.value = {
         message: t("errors.server_error"),
         description: err?.response.data.message,
