@@ -904,9 +904,14 @@ select.error:has(option:checked:disabled) {
 .form-group-border > input, 
 .form-group-border > select, 
 .form-group-border > textarea {
-    @apply border-0 bg-transparent w-full text-active py-2 pl-8 pr-2.5 relative z-10;
+    @apply border-0 bg-transparent w-full text-active py-2 pl-9 pr-2.5 relative z-10;
     color: var(--text-color);
-    min-height: 3rem;
+}
+
+.form-group-border input::placeholder,
+.form-group-border textarea::placeholder {
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
 
 .form-group-border.input-group > select{
@@ -924,7 +929,7 @@ select.error:has(option:checked:disabled) {
 }
 
 .form-group-border > label {
-    @apply absolute left-9 top-2.5 pointer-events-none duration-200 bg-inherit text-inactive whitespace-nowrap;
+    @apply absolute left-9 top-2 pointer-events-none duration-200 bg-inherit text-inactive whitespace-nowrap;
     color: var(--text-muted);
 }
 
@@ -966,6 +971,13 @@ select.error:has(option:checked:disabled) {
     @apply text-danger;
 }
 
+.form-group-border > input:focus::placeholder,
+.form-group-border > input:not(:placeholder-shown)::placeholder,
+.form-group-border > textarea:focus::placeholder,
+.form-group-border > textarea:not(:placeholder-shown)::placeholder {
+    opacity: 1;
+}
+
 .form-group-border .show-password, .form-group-border .clear
 {
     @apply absolute right-2 text-lg top-2 text-inactive z-20;
@@ -988,7 +1000,7 @@ select.error:has(option:checked:disabled) {
 }
 
 .form-group-border > i{
-    @apply absolute top-3.5 left-2.5 text-inactive z-20;
+    @apply absolute top-3 left-3 text-inactive z-20;
 }
 
 .form-group-border > i.bi{
@@ -1789,7 +1801,8 @@ select.error:has(option:checked:disabled) {
 
 .modal-backdrop{
     @apply fixed w-full h-full top-0 bottom-0 left-0 right-0 z-50 duration-200 flex justify-center items-center p-4 opacity-0 pointer-events-none;
-    background-color: rgb(0 0 0 / 50%);
+    background-color: rgb(15 23 42 / 58%);
+    backdrop-filter: blur(10px);
 }
 
 .dark .modal-backdrop{

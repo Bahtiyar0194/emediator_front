@@ -2,7 +2,9 @@
   <div class="card p-5">
     <div class="custom-grid">
       <div class="col-span-12">
-        <h3 class="mb-0">{{ $t('pages.documents.party') }} {{ props.partyIndex + 1 }}</h3>
+        <h3 class="mb-0">
+          {{ $t("pages.documents.party") }} {{ props.partyIndex + 1 }}
+        </h3>
       </div>
       <stepName :num="1" :title="$t('subject_type')" />
 
@@ -191,8 +193,10 @@
                     v-model="
                       docData.agreement_parties[props.partyIndex].data.house
                     "
-                    type="number"
-                    placeholder=" "
+                    type="text"
+                    inputmode="numeric"
+                    pattern="^\d+(\/\d+)?$"
+                    placeholder="22/1"
                   />
                   <label
                     :class="{
@@ -443,8 +447,9 @@
                       docData.agreement_parties[props.partyIndex].data
                         .company_building
                     "
-                    type="number"
-                    placeholder=" "
+                    inputmode="numeric"
+                    pattern="^\d+(\/\d+)?$"
+                    placeholder="22/1"
                   />
                   <label
                     :class="{

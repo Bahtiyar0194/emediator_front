@@ -224,8 +224,8 @@ export default {
         region: 'Өңір',
         city: 'Қала',
         street: {
-            title: 'Көше немесе ш/а',
-            required: 'Көше немесе ш/а енгізілу қажет'
+            title: 'Ауыл, көше, шағын-аудан',
+            required: 'Ауыл, көше, шағын-аудан енгізілу қажет'
         },
         house: {
             title: 'Үй №',
@@ -280,7 +280,12 @@ export default {
                 sign_with_qr_code_description: 'Смартфонның көмегімен eGov Mobile немесе eGov Business арқылы кіру',
             },
             dont_have_an_account: "Менде аккаунт жоқ.",
-            sign_out: 'Аккаунттан шығу',
+            
+            sign_out: {
+                title: 'Аккаунттан шығу',
+                please_wait: 'Күте тұрыңыз, аккаунттан шығып жатырмыз'
+            },
+
             select_links: {
                 title: 'Осы құрылғымен тиісті қосымша арқылы қол қою үшін осы түймелердің бірін басыңыз',
                 item_1: 'eGov Mobile арқылы жеке тұлға ретінде қол қою',

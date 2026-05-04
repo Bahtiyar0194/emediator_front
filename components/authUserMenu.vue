@@ -49,10 +49,10 @@
         </button>
       </li>
       <li>
-        <button @click="logout()">
+        <nuxt-link :to="localePath('/logout')">
           <i class="pi pi-sign-out"></i>
-          {{ $t("pages.auth.sign_out") }}
-        </button>
+          {{ $t("pages.auth.sign_out.title") }}
+        </nuxt-link>
       </li>
     </template>
   </dropdownMenu>
@@ -64,7 +64,7 @@ import userAvatar from "./ui/userAvatar.vue";
 
 const authUser = useSanctumUser();
 const { $axiosPlugin } = useNuxtApp();
-const { logout, refreshIdentity } = useSanctumAuth();
+const { refreshIdentity } = useSanctumAuth();
 const router = useRouter();
 
 const changeUserMode = async (role_type_id) => {

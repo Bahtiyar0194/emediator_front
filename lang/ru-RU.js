@@ -222,8 +222,8 @@ export default {
         region: 'Регион',
         city: 'Город',
         street: {
-            title: 'Улица или мкр',
-            required: 'Заполните улицу или мкр'
+            title: 'Село, улица, микрорайон',
+            required: 'Заполните село, улицу, микрорайон'
         },
         house: {
             title: '№ дома',
@@ -278,7 +278,12 @@ export default {
                 sign_with_qr_code_description: 'С помощью смартфона через eGov Mobile или eGov Business',
             },
             dont_have_an_account: "Нет аккаунта?",
-            sign_out: 'Выйти из аккаунта',
+            
+            sign_out: {
+                title: 'Выйти из аккаунта',
+                please_wait: 'Пожалуйста подождите, идет выход из аккаунта'
+            },
+
             select_links: {
                 title: 'Кликните по одной из этих кнопок для подписания в соответствующем приложении на этом устройстве',
                 item_1: 'Подписать в eGov Mobile как физическое лицо',
