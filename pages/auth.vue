@@ -195,8 +195,7 @@ async function sendQR(dataURL) {
           nameKz: "Emediator.kz порталында аутентификация өту",
           document: {
             file: {
-              data: nonce.value,
-              mime: "@file/pdf",
+              data: nonce.value
             },
           },
         },
