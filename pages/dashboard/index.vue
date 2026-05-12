@@ -240,7 +240,7 @@
     <template v-if="docData" v-slot:body_content>
       <steps :currentStep="currentStep" :steps="documentSteps">
         <scrollFadeContainer
-          ref="scrollBoxCreate"
+          ref="modalScrollBox"
           :maxHeight="500"
           :fadeSize="40"
         >
@@ -258,6 +258,16 @@
             </div>
 
             <div class="btn-wrap mt-4">
+              <button
+                v-if="currentStep === 1"
+                type="button"
+                class="btn btn-light"
+                @click="addParty()"
+              >
+                <i class="pi pi-user-plus"></i>
+                {{ $t("pages.documents.add_party") }}
+              </button>
+
               <button
                 v-if="currentStep > 1"
                 class="btn btn-light"
@@ -425,7 +435,7 @@ const signError = ref(null);
 const sortKey = ref("agreements.created_at"); // Ключ сортировки
 const sortDirection = ref("asc"); // Направление сортировки: asc или desc
 
-const scrollBoxCreate = ref(null);
+const modalScrollBox = ref(null);
 
 const originalPoints = ref([]); // Оригинал для сброса
 const points = ref([]); // Копия для мутации и отправки на бэкенд
@@ -450,20 +460,32 @@ const partyFormData = {
   iin: null,
 
   data: {
-    location_id: null,
-    street: null,
-    house: null,
-    flat: null,
+    location: {
+      id: null,
+      is_district: false,
+      village: null,
+      street: null,
+      house: null,
+      flat: null,
+      phone: null,
+      email: null,
+    },
 
     is_legal: false,
     legal_form_id: null,
     post_type_id: null,
     bin: null,
+
     company_name: null,
-    company_location_id: null,
-    company_street: null,
-    company_building: null,
-    company_cabinet: null,
+
+    company_location: {
+      id: null,
+      is_district: false,
+      village: null,
+      street: null,
+      building: null,
+      cabinet: null,
+    },
   },
 };
 
@@ -484,6 +506,13 @@ const createDocData = () => ({
     prepayment: null,
   },
 });
+
+const addParty = () => {
+  docData.value.agreement_parties.push(createParty());
+  setTimeout(() => {
+    modalScrollBox.value.scrollToBottom(true);
+  }, 500);
+};
 
 const tabs_data = computed(() => [
   {
@@ -847,7 +876,7 @@ const saveAgreement = async () => {
         currentStep.value = res.data.step + 1;
         modalClass.value = documentSteps[res.data.step].modalSize;
         pendingModal.value = false;
-        scrollBoxCreate.value.scrollToTop(true);
+        modalScrollBox.value.scrollToTop(true);
 
         if (res.data.preview) {
           previewDocument.value = res.data.preview;
@@ -866,7 +895,7 @@ const saveAgreement = async () => {
         if (err.response.status == 422) {
           errors.value = err.response.data;
           pendingModal.value = false;
-          scrollBoxCreate.value.scrollToTop(true);
+          modalScrollBox.value.scrollToTop(true);
         } else {
           router.push({
             path: "/error",

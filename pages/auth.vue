@@ -50,6 +50,8 @@ onMounted(() => {
 });
 
 async function getNonce() {
+  pending.value = true;
+
   await $axiosPlugin
     .post("/auth/get_token")
     .then((res) => {
@@ -69,9 +71,10 @@ async function getNonce() {
         description: err?.response.data.message,
         status: err?.response.status,
       };
+    })
+    .finally(() => {
+      pending.value = false;
     });
-
-  pending.value = false;
 }
 
 async function auth(nonce, signature) {
@@ -176,6 +179,7 @@ async function getQR() {
 }
 
 async function sendQR(dataURL) {
+  console.log('post запрос к ' + dataURL)
   await $axiosPlugin
     .post(dataURL, {
       signMethod: "CMS_WITH_DATA",
@@ -196,8 +200,17 @@ async function sendQR(dataURL) {
       ],
     })
     .then((r) => {
-      alert(JSON.stringify(r));
-      signQR(r.data.signURL);
+      if (r.data.signURL) {
+        signQR(r.data.signURL);
+      } else {
+        signError.value = {
+          message: t("errors.server_error"),
+          description: JSON.stringify(r.data),
+          status: err?.response.status,
+        };
+        pending.value = false;
+        return;
+      }
     })
     .catch((err) => {
       signError.value = {
@@ -211,6 +224,7 @@ async function sendQR(dataURL) {
 }
 
 async function signQR(signURL) {
+  console.log('get запрос к ' + signURL)
   pending.value = true;
   await $axiosPlugin
     .get(signURL)
@@ -230,6 +244,7 @@ async function signQR(signURL) {
 
 const clearQR = () => {
   authQR.value = null;
+  getNonce();
 };
 
 function reloadPage() {

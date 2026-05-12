@@ -221,9 +221,13 @@ export default {
         country: 'Страна',
         region: 'Регион',
         city: 'Город',
+        village: {
+            title: 'Село, поселок',
+            required: 'Заполните название села или поселка'
+        },
         street: {
-            title: 'Село, улица, микрорайон',
-            required: 'Заполните село, улицу, микрорайон'
+            title: 'Улица, микрорайон',
+            required: 'Заполните улицу, микрорайон'
         },
         house: {
             title: '№ дома',
@@ -353,6 +357,8 @@ export default {
             party_1: 'Сторона 1',
             party_2: 'Сторона 2',
             party_3: 'Сторона 3',
+            add_party: 'Добавить сторону',
+
             select_agreement_type: 'Выбор типа соглашения',
 
             payment_data: 'Сведения о платеже',

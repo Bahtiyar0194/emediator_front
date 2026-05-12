@@ -40,16 +40,33 @@ export function useLocationSelect({
                 selectedId: "",
             });
 
-            modelRef.value = "";
+            modelRef.value = {
+                ...modelRef.value,
+                id: null,
+                is_district: false,
+            };
         } else {
-            modelRef.value = selectedLevel.selectedId;
+            modelRef.value = {
+                ...modelRef.value,
+                id: selectedLevel.selectedId,
+                is_district: selectedOption.location_type_slug === 'district',
+            };
         }
     };
 
     // 🔹 Восстановление при редактировании
+    let isRestoring = false;
+
     const restore = () => {
-        const targetId = modelRef.value;
-        if (!targetId) return;
+        if (isRestoring) return;
+
+        isRestoring = true;
+
+        const targetId = modelRef.value?.id;
+        if (!targetId) {
+            isRestoring = false;
+            return;
+        }
 
         const buildPath = (nodes, path = []) => {
             for (const node of nodes) {
@@ -69,7 +86,10 @@ export function useLocationSelect({
 
         const root = treeRef.value?.[0]?.childs || [];
         const path = buildPath(root);
-        if (!path) return;
+        if (!path) {
+            isRestoring = false;
+            return;
+        }
 
         selections.value = [];
         let currentOptions = root;
@@ -82,7 +102,39 @@ export function useLocationSelect({
 
             currentOptions = node.childs || [];
         });
+
+        const lastNode = path[path.length - 1];
+        const newIsDistrict = lastNode.location_type_slug === 'district';
+
+        if (modelRef.value?.is_district !== newIsDistrict) {
+            modelRef.value = {
+                ...modelRef.value,
+                is_district: newIsDistrict,
+            };
+        }
+
+        isRestoring = false;
     };
+
+    // 🔥 ВАЖНО: синхронизация при изменении model
+    watch(
+        () => modelRef.value?.id,
+        (val) => {
+            if (!val) {
+                init();
+            } else {
+                restore();
+            }
+        }
+    );
+
+    // 🔥 ВАЖНО: синхронизация при смене дерева
+    watch(
+        () => treeRef.value,
+        () => {
+            init();
+        }
+    );
 
     return {
         selections,
