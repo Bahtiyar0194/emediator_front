@@ -190,7 +190,6 @@ async function sendQR(dataURL) {
       documentsToSign: [
         {
           id: 1,
-          meta: [],
           nameEn: "Authentication on portal Emediator.kz",
           nameRu: "Аутентификация на портале Emediator.kz",
           nameKz: "Emediator.kz порталында аутентификация өту",
