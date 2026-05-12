@@ -186,7 +186,7 @@ async function sendQR(dataURL) {
 
   await $axiosPlugin
     .post(dataURL, {
-      signMethod: "CMS_WITH_DATA",
+      signMethod: "CMS_SIGN_ONLY",
       documentsToSign: [
         {
           id: 1,
@@ -197,7 +197,7 @@ async function sendQR(dataURL) {
           document: {
             file: {
               data: nonce.value,
-              mime: "",
+              mime: "@file/pdf",
             },
           },
         },
