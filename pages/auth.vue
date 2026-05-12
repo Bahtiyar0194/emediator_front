@@ -7,6 +7,7 @@
     </div>
   </div>
   <div class="card-body">
+    <p class="text-danger font-medium" v-if="processText">{{ processText }}</p>
     <signButtons
       :mode="'auth'"
       :signError="signError"
@@ -34,6 +35,8 @@ const nonce = ref(null);
 const pending = ref(true);
 const signError = ref(null);
 const ncaLayer = ref(new NCALayerClient());
+
+const processText = ref(null);
 
 useHead({
   title: t("pages.auth.title"),
@@ -179,7 +182,8 @@ async function getQR() {
 }
 
 async function sendQR(dataURL) {
-  console.log('post запрос к ' + dataURL)
+  processText.value = "post запрос к " + dataURL;
+
   await $axiosPlugin
     .post(dataURL, {
       signMethod: "CMS_WITH_DATA",
@@ -224,12 +228,24 @@ async function sendQR(dataURL) {
 }
 
 async function signQR(signURL) {
-  console.log('get запрос к ' + signURL)
+  processText.value = "get запрос к " + signURL;
   pending.value = true;
   await $axiosPlugin
     .get(signURL)
     .then((r) => {
-      auth(nonce.value, r.data.documentsToSign[0].document.file.data);
+      const signData = r.data.documentsToSign[0].document.file.data;
+
+      if (signData) {
+        auth(nonce.value, signData);
+      } else {
+        signError.value = {
+          message: t("errors.server_error"),
+          description: JSON.stringify(r.data),
+          status: err?.response.status,
+        };
+        pending.value = false;
+        return;
+      }
     })
     .catch((err) => {
       signError.value = {
