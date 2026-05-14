@@ -1,5 +1,19 @@
 <template>
   <div class="custom-grid">
+    <div class="col-span-12 lg:col-span-8">
+      <embed
+        :src="
+          config.public.apiBase +
+          '/agreement/get_file/' +
+          props.type +
+          '/signed/' +
+          props.document.uuid
+        "
+        width="100%"
+        height="500px"
+      />
+
+    </div>
     <div class="col-span-12 lg:col-span-4">
       <div class="custom-grid">
         <div class="col-span-12">
@@ -29,7 +43,7 @@
           <div class="btn-wrap">
             <button
               v-if="canSign()"
-              class="btn btn-outline-success"
+              class="btn btn-success"
               @click="props.openSignModal(props.type)"
             >
               <i class="pi pi-check"></i>
@@ -37,7 +51,7 @@
             </button>
 
             <button
-              class="btn btn-outline-success"
+              class="btn btn-success"
               v-if="canVerify()"
               @click="props.openVerifySignModal(props.type)"
             >
@@ -71,23 +85,11 @@
         </div>
       </div>
     </div>
-    <div class="col-span-12 lg:col-span-8">
-      <iframe
-        :src="
-          config.public.apiBase +
-          '/agreement/get_file/' +
-          props.type +
-          '/signed/' +
-          props.document.uuid
-        "
-        width="100%"
-        height="500px"
-      />
-    </div>
   </div>
 </template>
 
 <script setup>
+import pdfViewer from "../../ui/pdfViewer.vue";
 import userSignCard from "../userSignCard.vue";
 
 const config = useRuntimeConfig();

@@ -37,12 +37,12 @@
 
         <div class="flex flex-col gap-2">
           <a
-            class="btn btn-sm btn-outline-primary"
+            class="btn btn-sm btn-primary"
             :href="signQR.eGovMobileLaunchLink"
             >{{ $t("pages.auth.select_links.item_1") }}</a
           >
           <a
-            class="btn btn-sm btn-outline-primary"
+            class="btn btn-sm btn-primary"
             :href="signQR.eGovBusinessLaunchLink"
             >{{ $t("pages.auth.select_links.item_2") }}</a
           >
