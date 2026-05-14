@@ -12,7 +12,6 @@
         width="100%"
         height="500px"
       />
-
     </div>
     <div class="col-span-12 lg:col-span-4">
       <div class="custom-grid">
@@ -89,7 +88,6 @@
 </template>
 
 <script setup>
-import pdfViewer from "../../ui/pdfViewer.vue";
 import userSignCard from "../userSignCard.vue";
 
 const config = useRuntimeConfig();
