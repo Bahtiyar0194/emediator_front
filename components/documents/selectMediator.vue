@@ -5,7 +5,7 @@
         <i class="pi pi-id-card"></i>
         <select v-model.number="docData.mediator_id">
           <option disabled :value="null">
-            {{ $t("pages.documents.select_mediator_alt") }}
+            {{ $t("pages.documents.mediator.select.required") }}
           </option>
           <option
             v-for="option in mediators"
@@ -23,8 +23,8 @@
         >
           {{
             errors["mediator_id"]
-              ? $t("pages.documents.select_mediator_alt")
-              : $t("pages.documents.mediator")
+              ? $t("pages.documents.mediator.select.required")
+              : $t("pages.documents.mediator.title")
           }}
         </label>
       </div>

@@ -7,7 +7,6 @@
     </div>
   </div>
   <div class="card-body">
-    <p class="text-danger font-medium" v-if="processText">{{ processText }}</p>
     <signButtons
       :mode="'auth'"
       :signError="signError"
@@ -71,8 +70,8 @@ async function getNonce() {
     .catch((err) => {
       signError.value = {
         message: t("errors.server_error"),
-        description: err?.response.data.message,
-        status: err?.response.status,
+        description: err?.response.data.message || err?.message,
+        status: null,
       };
     })
     .finally(() => {
@@ -191,8 +190,8 @@ async function sendQR(dataURL) {
         {
           id: 1,
           nameEn: "Authentication on portal Emediator.kz",
-          nameRu: "Аутентификация на портале Emediator.kz",
-          nameKz: "Emediator.kz порталында аутентификация өту",
+          nameRu: "Вход в личный кабинет на портале Emediator.kz",
+          nameKz: "Emediator.kz порталындағы жеке кабинетке өту",
           document: {
             file: {
               data: nonce.value,

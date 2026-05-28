@@ -2,7 +2,7 @@
   <loader
     :className="'full-overlay'"
     :showPendingText="true"
-    :pendingText="$t('pages.auth.sign_out.please_wait')"
+    :pendingText="$t('pages.logout.please_wait')"
   />
 </template>
 <script setup>

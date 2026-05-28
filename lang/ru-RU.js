@@ -90,6 +90,7 @@ export default {
     reset_search_filter: "Сбросить фильтр",
     show_search_filter: 'Показать фильтр поиска',
     hide_search_filter: 'Скрыть фильтр поиска',
+    clear: 'Сбросить',
 
     subject_type: 'Выберите тип субъекта',
     legal_entity: 'Юридическое лицо',
@@ -282,11 +283,6 @@ export default {
                 sign_with_qr_code_description: 'С помощью смартфона через eGov Mobile или eGov Business',
             },
             dont_have_an_account: "Нет аккаунта?",
-            
-            sign_out: {
-                title: 'Выйти из аккаунта',
-                please_wait: 'Пожалуйста подождите, идет выход из аккаунта'
-            },
 
             select_links: {
                 title: 'Кликните по одной из этих кнопок для подписания в соответствующем приложении на этом устройстве',
@@ -294,6 +290,12 @@ export default {
                 item_2: 'Подписать в eGov Business как юридическое лицо'
             }
         },
+
+        logout: {
+            title: 'Выйти из аккаунта',
+            please_wait: 'Пожалуйста подождите, идет выход из аккаунта'
+        },
+
         dashboard: {
             title: 'Личный кабинет',
             main_wallet: 'Основной кошелёк',
@@ -348,9 +350,31 @@ export default {
             },
 
             initiator: 'Инициатор',
-            mediator: 'Медиатор',
-            select_mediator: 'Выбор медиатора',
-            select_mediator_alt: 'Выберите медиатора',
+
+            mediator: {
+                title: 'Медиатор',
+                data: 'Данные медиатора',
+                select: {
+                    title: 'Выбор медиатора',
+                    required: 'Выберите медиатора'
+                },
+                association_name_short: {
+                    title: 'Короткое название общественного объединения',
+                    required: 'Укажите короткое название общественного объединения'
+                },
+                association_name_full: {
+                    title: 'Полное название общественного объединения',
+                    required: 'Укажите полное название общественного объединения'
+                },
+                cert_num: {
+                    title: '№ сертификата',
+                    required: 'Укажите № сертификата'
+                },
+                cert_date: {
+                    title: 'Дата выдачи сертификата',
+                    required: 'Укажите дату выдачи сертификата'
+                }
+            },
 
             parties: 'Стороны',
             party: 'Сторона',

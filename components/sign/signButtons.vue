@@ -1,27 +1,40 @@
 <template>
-  <template v-if="!signError">
+  <template v-if="signError">
+    <p class="font-medium text-danger">{{ signError.message }}</p>
+    <p>{{ signError.description }}</p>
+    <button @click="props.reloadPage" class="btn btn-outline-primary">
+      <i class="pi pi-refresh"></i>
+      {{ $t("restart") }}
+    </button>
+  </template>
+
+  <template v-else>
     <div v-if="signQR">
       <button class="btn btn-light mb-4" @click="props.clearQR">
         <i class="pi pi-arrow-left"></i>
         {{ $t("back") }}
       </button>
 
-      <p v-if="localeProperties.code === 'ru'" class="font-medium">
-        Отсканируйте этот QR код с помощью приложений
-        <a
-          href="https://egov.kz/cms/ru/information/mobile/mobile_application"
-          target="_blank"
-          >eGov Mobile или eGov Business</a
-        >
+      <p class="font-medium">
+        <template v-if="localeProperties.code === 'ru'">
+          Отсканируйте этот QR код с помощью приложений
+          <a
+            href="https://egov.kz/cms/ru/information/mobile/mobile_application"
+            target="_blank"
+            >eGov Mobile или eGov Business</a
+          >
+        </template>
+
+        <template v-if="localeProperties.code === 'kk'">
+          <a
+            href="https://egov.kz/cms/ru/information/mobile/mobile_application"
+            target="_blank"
+            >eGov Mobile немесе eGov Business</a
+          >
+          қосымшасы арқылы осы QR-кодты сканерлеп алыңыз
+        </template>
       </p>
-      <p v-if="localeProperties.code === 'kk'" class="font-medium">
-        <a
-          href="https://egov.kz/cms/ru/information/mobile/mobile_application"
-          target="_blank"
-          >eGov Mobile немесе eGov Business</a
-        >
-        қосымшасы арқылы осы QR-кодты сканерлеп алыңыз
-      </p>
+
       <img
         class="m-auto w-1/3"
         :src="'data:image/png;base64,' + signQR.qrCode"
@@ -81,15 +94,6 @@
         >
       </button>
     </div>
-  </template>
-
-  <template v-else>
-    <p class="font-medium text-danger">{{ signError.message }}</p>
-    <p>{{ signError.description }}</p>
-    <button @click="props.reloadPage" class="btn btn-outline-primary">
-      <i class="pi pi-refresh"></i>
-      {{ $t("restart") }}
-    </button>
   </template>
 </template>
 

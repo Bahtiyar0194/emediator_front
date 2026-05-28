@@ -51,7 +51,7 @@
       <li>
         <nuxt-link :to="localePath('/logout')">
           <i class="pi pi-sign-out"></i>
-          {{ $t("pages.auth.sign_out.title") }}
+          {{ $t("pages.logout.title") }}
         </nuxt-link>
       </li>
     </template>

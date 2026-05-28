@@ -90,6 +90,7 @@ export default {
     reset_search_filter: "Cүзгіні қалпына келтіру",
     show_search_filter: 'Іздеу сүзгісін көрсету',
     hide_search_filter: 'Іздеу сүзгісін жасыру',
+    clear: 'Тазарту',
 
     subject_type: 'Субъектінің түрін таңдаңыз',
     legal_entity: 'Заңды тұлға',
@@ -178,7 +179,6 @@ export default {
             title: 'Аты',
             required: 'Аты енгізілу қажет'
         },
-
         last_name: {
             title: 'Тегі',
             required: 'Тегі енгізілу қажет'
@@ -285,17 +285,18 @@ export default {
             },
             dont_have_an_account: "Менде аккаунт жоқ.",
 
-            sign_out: {
-                title: 'Аккаунттан шығу',
-                please_wait: 'Күте тұрыңыз, аккаунттан шығып жатырмыз'
-            },
-
             select_links: {
                 title: 'Осы құрылғымен тиісті қосымша арқылы қол қою үшін осы түймелердің бірін басыңыз',
                 item_1: 'eGov Mobile арқылы жеке тұлға ретінде қол қою',
                 item_2: 'eGov Business арқылы заңды тұлға ретінде қол қою'
             }
         },
+
+        logout: {
+            title: 'Аккаунттан шығу',
+            please_wait: 'Күте тұрыңыз, аккаунттан шығып жатырмыз'
+        },
+
         dashboard: {
             title: 'Жеке кабинет',
             main_wallet: 'Негізгі әмиян',
@@ -350,9 +351,32 @@ export default {
             },
 
             initiator: 'Бастамашы',
-            mediator: 'Медиатор',
-            select_mediator: 'Медиаторды таңдау',
-            select_mediator_alt: 'Медиаторды таңдаңыз',
+
+            mediator: {
+                title: 'Медиатор',
+                data: 'Медиатор туралы деректер',
+                select: {
+                    title: 'Медиаторды таңдау',
+                    required: 'Медиаторды таңдаңыз'
+                },
+                association_name_short: {
+                    title: 'Қоғамдық бірлестіктің қысқаша атауы',
+                    required: 'Қоғамдық бірлестіктің қысқаша атауын енгізіңіз'
+                },
+                association_name_full: {
+                    title: 'Қоғамдық бірлестіктің толық атауы',
+                    required: 'Қоғамдық бірлестіктің толық атауын енгізіңіз'
+                },
+                cert_num: {
+                    title: 'Сертификат №',
+                    required: 'Сертификат № енгізіңіз'
+                },
+                cert_date: {
+                    title: 'Сертификаттың берілген күні',
+                    required: 'Сертификаттың берілген күнін енгізіңіз'
+                }
+            },
+
 
             parties: 'Тараптар',
             party: 'Тарап',

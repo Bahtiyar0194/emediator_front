@@ -76,13 +76,19 @@ const dashboardMenu = [
     link: "/dashboard",
     roles: [1, 2, 3, 4],
   },
+  {
+    title: "pages.users.title",
+    icon: "pi pi-users",
+    link: "/dashboard/users",
+    roles: [1],
+  },
 ];
 
 const route = useRoute();
 
 const hasAccess = computed(() => {
   const currentMenuItem = dashboardMenu.find(
-    (item) => item.link === route.fullPath
+    (item) => item.link === route.fullPath,
   );
   if (currentMenuItem) {
     if (currentMenuItem.roles.includes(authUser.value?.current_role_id)) {

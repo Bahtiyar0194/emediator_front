@@ -1,7 +1,7 @@
 <template>
   <div class="custom-grid">
     <div class="col-span-12 lg:col-span-8">
-      <embed
+      <iframe
         :src="
           config.public.apiBase +
           '/agreement/get_file/' +
@@ -12,6 +12,7 @@
         width="100%"
         height="500px"
       />
+
     </div>
     <div class="col-span-12 lg:col-span-4">
       <div class="custom-grid">

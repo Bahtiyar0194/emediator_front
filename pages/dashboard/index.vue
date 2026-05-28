@@ -396,6 +396,8 @@ import { useRouter } from "nuxt/app";
 
 import { NCALayerClient } from "ncalayer-js-client";
 
+import { createDataCollection } from "../../utils/partyFormData";
+
 const router = useRouter();
 const config = useRuntimeConfig();
 const { t, localeProperties } = useI18n();
@@ -459,34 +461,7 @@ const partyFormData = {
   given_name: null,
   iin: null,
 
-  data: {
-    location: {
-      id: null,
-      is_district: false,
-      village: null,
-      street: null,
-      house: null,
-      flat: null,
-      phone: null,
-      email: null,
-    },
-
-    is_legal: false,
-    legal_form_id: null,
-    post_type_id: null,
-    bin: null,
-
-    company_name: null,
-
-    company_location: {
-      id: null,
-      is_district: false,
-      village: null,
-      street: null,
-      building: null,
-      cabinet: null,
-    },
-  },
+  data: createDataCollection(),
 };
 
 const createParty = () => structuredClone(partyFormData);
@@ -720,7 +695,7 @@ const documentSteps = [
     modalSize: "modal-6xl",
   },
   {
-    title: t("pages.documents.select_mediator"),
+    title: t("pages.documents.mediator.select.title"),
     component: selectMediator,
     props: {
       errors,
@@ -1061,6 +1036,7 @@ async function sendQR(dataURL) {
       "/original/" +
       currentAgreement.value[docMode.value].uuid,
   );
+
   const result = await response.json();
 
   const agreement_name =
@@ -1152,7 +1128,8 @@ async function sign(signature) {
       } else {
         router.push("/error");
       }
-    }).finally(() => {
+    })
+    .finally(() => {
       pendingModal.value = false;
     });
 }
