@@ -238,7 +238,7 @@
       </h4>
     </template>
     <template v-if="docData" v-slot:body_content>
-      <steps :currentStep="currentStep" :steps="documentSteps">
+      <steps v-if="canEdit" :currentStep="currentStep" :steps="documentSteps">
         <scrollFadeContainer
           ref="modalScrollBox"
           :maxHeight="500"
@@ -259,7 +259,7 @@
 
             <div class="btn-wrap mt-4">
               <button
-                v-if="currentStep === 1"
+                v-if="currentStep === 1 && authUser.roles.length > 1"
                 type="button"
                 class="btn btn-light"
                 @click="addParty()"
@@ -292,6 +292,17 @@
           </form>
         </scrollFadeContainer>
       </steps>
+
+      <template v-else>
+        <p class="font-medium">
+          {{ $t("pages.documents.agreement.permissions.title") }}
+        </p>
+
+        <ol>
+          <li>{{ $t("pages.documents.agreement.permissions.initiator") }};</li>
+          <li>{{ $t("pages.documents.agreement.permissions.signed_by_all") }}.</li>
+        </ol>
+      </template>
     </template>
   </modal>
 
@@ -404,6 +415,7 @@ const { t, localeProperties } = useI18n();
 const { $axiosPlugin } = useNuxtApp();
 const authUser = useSanctumUser();
 
+const canEdit = ref(true);
 const docData = ref(null);
 const mode = ref(null);
 const docMode = ref(null);
@@ -523,10 +535,15 @@ const openModal = (action) => {
 
   switch (action) {
     case "create":
+      canEdit.value = true;
       docData.value = createDocData();
       break;
 
     case "edit":
+      canEdit.value =
+        authUser.value.user_id ===
+        currentAgreement.value.agreement.initiator_id;
+
       docData.value = {
         agreement_parties: currentAgreement.value.agreement.parties.filter(
           (p) => p.is_mediator === 0,
@@ -557,7 +574,7 @@ const openModal = (action) => {
 
   modalIsVisible.value = true;
   currentStep.value = 1;
-  modalClass.value = documentSteps[0].modalSize;
+  modalClass.value = canEdit.value === true ? documentSteps[0].modalSize : 'modal-lg';
 };
 
 const closeModal = () => {
@@ -737,7 +754,7 @@ const backToStep = (step) => {
 
 const getAttributes = async () => {
   await $axiosPlugin
-    .get("/agreement/get_attributes")
+    .get(`/agreement/get_attributes?lang=${localeProperties.value.code}`)
     .then((res) => {
       locations.value = res.data.locations;
       legalForms.value = res.data.legal_forms;

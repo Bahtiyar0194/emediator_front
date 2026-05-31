@@ -30,7 +30,7 @@
                 :partyName="`${party.last_name} ${party.first_name} ${party.given_name || ''}`"
                 :partyTypeName="
                   party.is_mediator === 1
-                    ? $t('pages.documents.mediator')
+                    ? $t('pages.documents.mediator.title')
                     : $t('pages.documents.party_' + (partyIndex + 1))
                 "
                 :signId="party.sigex_sign_id"
