@@ -1549,7 +1549,6 @@ select.error:has(option:checked:disabled) {
     @apply bg-active rounded-xl max-w-full relative border-inactive overflow-hidden overflow-y-hidden shadow-lg;
     background-color: var(--surface-color);
     border-color: var(--border-color);
-    border-radius: 1.35rem;
     box-shadow: var(--shadow-card);
     backdrop-filter: blur(20px);
 }
@@ -2069,11 +2068,11 @@ select.error:has(option:checked:disabled) {
 }
 
 .tab-header-item{
-    @apply px-3 py-2 border-inactive bg-active rounded-xl hover:cursor-pointer text-inactive flex items-center relative;
+    @apply px-3 py-2 border-active bg-active rounded-xl hover:cursor-pointer text-active flex items-center relative font-medium;
 }
 
 .tab-header-item.active{
-    @apply border-active text-active cursor-default; 
+    @apply bg-success text-white cursor-default; 
 }
 
 .tab-header-item.active.success{

@@ -300,7 +300,9 @@
 
         <ol>
           <li>{{ $t("pages.documents.agreement.permissions.initiator") }};</li>
-          <li>{{ $t("pages.documents.agreement.permissions.signed_by_all") }}.</li>
+          <li>
+            {{ $t("pages.documents.agreement.permissions.signed_by_all") }}.
+          </li>
         </ol>
       </template>
     </template>
@@ -574,7 +576,8 @@ const openModal = (action) => {
 
   modalIsVisible.value = true;
   currentStep.value = 1;
-  modalClass.value = canEdit.value === true ? documentSteps[0].modalSize : 'modal-lg';
+  modalClass.value =
+    canEdit.value === true ? documentSteps[0].modalSize : "modal-lg";
 };
 
 const closeModal = () => {
@@ -978,20 +981,18 @@ async function signWithNCALayer() {
 
   let base64EncodedSignature;
 
-  const response = await fetch(
+  const { data } = await $axiosPlugin.get(
     config.public.apiBase +
-      "/agreement/get_file/" +
+      "/document/get_file/" +
       docMode.value +
       "/original/" +
       currentAgreement.value[docMode.value].uuid,
   );
 
-  const result = await response.json();
-
   try {
     base64EncodedSignature = await ncaLayer.value.basicsSignCMS(
       NCALayerClient.basicsStorageAll,
-      result.data, // здесь поддерживаются String | ArrayBuffer | Blob | File, строки интерпретируются как Base64
+      data.data, // здесь поддерживаются String | ArrayBuffer | Blob | File, строки интерпретируются как Base64
       NCALayerClient.basicsCMSParamsDetached,
       NCALayerClient.basicsSignerSignAny, // здесь используется ключ подписания
     );
@@ -1046,15 +1047,13 @@ async function getQR() {
 }
 
 async function sendQR(dataURL) {
-  const response = await fetch(
+  const { data } = await $axiosPlugin.get(
     config.public.apiBase +
-      "/agreement/get_file/" +
+      "/document/get_file/" +
       docMode.value +
       "/original/" +
       currentAgreement.value[docMode.value].uuid,
   );
-
-  const result = await response.json();
 
   const agreement_name =
     currentAgreement.value.agreement.template_name ||
@@ -1072,7 +1071,7 @@ async function sendQR(dataURL) {
           nameKz: agreement_name,
           document: {
             file: {
-              data: result.data,
+              data: data.data,
               mime: "@file/pdf",
             },
           },

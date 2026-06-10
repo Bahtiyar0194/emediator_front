@@ -64,7 +64,7 @@
     </div>
     <div v-else>
       <button
-        class="card p-4 flex flex-col justify-center items-center w-full"
+        class="border-inactive rounded-xl p-4 flex flex-col justify-center items-center w-full"
         @click="props.signWithNCALayer"
       >
         <img width="90px" src="/img/auth/ncalayer-banner.png" />
@@ -76,13 +76,13 @@
         >
       </button>
 
-      <div class="flex justify-center items-center relative my-6">
-        <span class="bg-inactive z-10 px-2">{{ $t("or") }}</span>
+      <div class="flex justify-center items-center relative my-4">
+        <span class="bg-active z-10 px-2">{{ $t("or") }}</span>
         <hr class="absolute w-full" />
       </div>
 
       <button
-        class="card p-4 flex flex-col justify-center items-center w-full"
+        class="border-inactive rounded-xl p-4 flex flex-col justify-center items-center w-full"
         @click="props.getQR"
       >
         <img width="60px" src="/img/auth/qrcode.svg" />

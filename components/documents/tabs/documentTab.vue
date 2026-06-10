@@ -1,18 +1,7 @@
 <template>
-  <div class="custom-grid">
+  <div v-if="pdfUrl" class="custom-grid">
     <div class="col-span-12 lg:col-span-8">
-      <iframe
-        :src="
-          config.public.apiBase +
-          '/agreement/get_file/' +
-          props.type +
-          '/signed/' +
-          props.document.uuid
-        "
-        width="100%"
-        height="500px"
-      />
-
+      <iframe :src="pdfUrl" width="100%" height="500px" />
     </div>
     <div class="col-span-12 lg:col-span-4">
       <div class="custom-grid">
@@ -63,7 +52,7 @@
               @click="
                 openFile(
                   config.public.apiBase +
-                    '/agreement/get_file/' +
+                    '/document/get_file/' +
                     props.document.uuid,
                 )
               "
@@ -89,10 +78,13 @@
 </template>
 
 <script setup>
+import { onMounted } from "vue";
 import userSignCard from "../userSignCard.vue";
 
+const { $axiosPlugin } = useNuxtApp();
 const config = useRuntimeConfig();
 const authUser = useSanctumUser();
+const pdfUrl = ref(null);
 
 const props = defineProps({
   type: {
@@ -129,4 +121,30 @@ const canVerify = () => {
 const canEdit = () => {
   return props.document.parties.some((p) => !p.sigex_sign_id);
 };
+
+const getPdfFile = async () => {
+  const response = await $axiosPlugin.get(
+    config.public.apiBase +
+      "/document/get_file/" +
+      props.type +
+      "/signed/" +
+      props.document.uuid,
+    {
+      responseType: "blob",
+    },
+  );
+
+  pdfUrl.value = URL.createObjectURL(response.data);
+};
+
+onMounted(() => {
+  getPdfFile();
+});
+
+onBeforeUnmount(() => {
+  if (pdfUrl.value) {
+    URL.revokeObjectURL(pdfUrl.value);
+    pdfUrl.value = null;
+  }
+});
 </script>
