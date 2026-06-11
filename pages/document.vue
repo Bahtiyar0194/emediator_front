@@ -1,53 +1,51 @@
 <template>
   <template v-if="currentDocument">
-    <template v-if="pdfUrl">
-      <div class="p-4 lg:p-6 h-screen">
-        <div class="custom-grid h-full">
+    <template v-if="pdfData">
+      <div class="p-4 lg:p-6">
+        <div class="custom-grid">
           <div class="col-span-12 lg:col-span-8">
-            <div class="card h-full">
-              <div class="card-header">
+            <div class="card">
+              <div class="card-header border-b-inactive">
                 <div class="title-wrap items-center mb-4">
                   <h3>{{ $t("pages.documents.view.title") }}</h3>
                   <selectLocale />
                 </div>
               </div>
-              <embed
-                :src="pdfUrl"
-                type="application/pdf"
-                width="100%"
-                height="100%"
-              />
+              <client-only>
+                <scrollFadeContainer
+                  :maxHeight="600"
+                  :fadeSize="80"
+                >
+                  <VuePdfEmbed :source="pdfData" />
+                </scrollFadeContainer>
+              </client-only>
             </div>
           </div>
           <div class="col-span-12 lg:col-span-4">
-            <div class="custom-grid">
-              <div class="col-span-12">
-                <ul class="list-group !px-6 !py-4">
-                  <li>
-                    <p class="text-inactive text-xl mb-0">
-                      {{ $t("pages.documents.parties") }}:
-                      <b>{{ currentDocument.parties.length }}</b>
-                    </p>
-                  </li>
-                  <template
-                    v-for="(party, partyIndex) in currentDocument.parties"
-                    :key="partyIndex"
-                  >
-                    <userSignCard
-                      :partyName="`${party.last_name} ${party.first_name} ${party.given_name || ''}`"
-                      :iin="party.iin"
-                      :partyTypeName="
-                        party.is_mediator === 1
-                          ? $t('pages.documents.mediator.title')
-                          : $t('pages.documents.party_' + (partyIndex + 1))
-                      "
-                      :signId="party.sigex_sign_id"
-                      :signedAt="party.signed_at"
-                    />
-                  </template>
-                </ul>
-              </div>
-            </div>
+              <ul class="list-group !px-6 !py-4">
+                <li>
+                  <p class="text-inactive text-xl mb-0">
+                    {{ $t("pages.documents.parties") }}:
+                    <b>{{ currentDocument.parties.length }}</b>
+                  </p>
+                </li>
+                <template
+                  v-for="(party, partyIndex) in currentDocument.parties"
+                  :key="partyIndex"
+                >
+                  <userSignCard
+                    :partyName="`${party.last_name} ${party.first_name} ${party.given_name || ''}`"
+                    :iin="party.iin"
+                    :partyTypeName="
+                      party.is_mediator === 1
+                        ? $t('pages.documents.mediator.title')
+                        : $t('pages.documents.party_' + (partyIndex + 1))
+                    "
+                    :signId="party.sigex_sign_id"
+                    :signedAt="party.signed_at"
+                  />
+                </template>
+              </ul>
           </div>
         </div>
       </div>
@@ -141,8 +139,10 @@ import { useRoute } from "vue-router";
 import { useRouter } from "nuxt/app";
 import selectLocale from "../components/ui/selectLocale.vue";
 import loader from "../components/ui/loader.vue";
+import scrollFadeContainer from "../components/ui/scrollFadeContainer.vue";
 import userSignCard from "../components/documents/userSignCard.vue";
 import { onMounted } from "vue";
+import VuePdfEmbed from "vue-pdf-embed";
 
 const route = useRoute();
 const router = useRouter();
@@ -154,7 +154,7 @@ const authUser = useSanctumUser();
 const uuid = route.query.q;
 const lastFourNumber = ref("");
 const currentDocument = ref(null);
-const pdfUrl = ref(null);
+const pdfData = ref(null);
 const errorStatus = ref(null);
 const pending = ref(true);
 
@@ -198,11 +198,11 @@ const getPdfFile = async () => {
         "?phone=" +
         lastFourNumber.value,
       {
-        responseType: "blob",
+        responseType: "arraybuffer",
       },
     );
 
-    pdfUrl.value = URL.createObjectURL(response.data);
+    pdfData.value = response.data;
   } catch (error) {
     pending.value = false;
     if (error.response.status) {
@@ -216,9 +216,6 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  if (pdfUrl.value) {
-    URL.revokeObjectURL(pdfUrl.value);
-    pdfUrl.value = null;
-  }
+  pdfData.value = null;
 });
 </script>

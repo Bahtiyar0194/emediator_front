@@ -1,6 +1,10 @@
 <template>
   <div v-if="props.showTabHeader === true" class="col-span-12">
-    <div class="btn-wrap md:justify-end" role="tablist" aria-orientation="horizontal">
+    <div
+      class="btn-wrap md:justify-end"
+      role="tablist"
+      aria-orientation="horizontal"
+    >
       <button
         v-for="tab in props.tabs"
         :key="tab.name"
@@ -27,22 +31,25 @@
   <div class="col-span-12">
     <div class="tab-body">
       <div
-        v-for="tab in props.tabs"
-        :key="tab.name"
-        class="tab-body-item"
-        role="tabpanel"
-        :id="getPanelId(tab.name)"
-        :aria-labelledby="getTabId(tab.name)"
-        :aria-hidden="activeTab === tab.name ? 'false' : 'true'"
-        :tabindex="activeTab === tab.name ? 0 : -1"
-        :class="activeTab === tab.name && 'active'"
+        class="tab-slider"
+        :style="{
+          transform: `translateX(-${activeIndex * 100}%)`,
+        }"
       >
-        <component
+        <div
+          v-for="tab in props.tabs"
           :key="tab.name"
-          v-if="tab.component"
-          :is="tab.component"
-          v-bind="tab.props"
-        ></component>
+          class="tab-body-item"
+          role="tabpanel"
+          :id="getPanelId(tab.name)"
+          :aria-labelledby="getTabId(tab.name)"
+        >
+          <component
+            v-if="tab.component"
+            :is="tab.component"
+            v-bind="tab.props"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -100,7 +107,9 @@ watch(
       return;
     }
 
-    const hasCurrentTab = props.tabs.some((tab) => tab.name === activeTab.value);
+    const hasCurrentTab = props.tabs.some(
+      (tab) => tab.name === activeTab.value,
+    );
     if (!hasCurrentTab) {
       activeTab.value = getInitialActiveTab();
     }
@@ -160,4 +169,8 @@ const handleTabKeydown = (event, currentTabName) => {
   selectTab(nextTabName);
   nextTick(() => focusTabButton(nextTabName));
 };
+
+const activeIndex = computed(() =>
+  props.tabs.findIndex((tab) => tab.name === activeTab.value),
+);
 </script>

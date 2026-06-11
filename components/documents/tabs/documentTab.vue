@@ -1,12 +1,16 @@
 <template>
-  <div v-if="pdfUrl" class="custom-grid">
+  <div v-if="pdfData" class="custom-grid">
     <div class="col-span-12 lg:col-span-8">
-      <embed
-        :src="pdfUrl"
-        type="application/pdf"
-        width="100%"
-        height="500px"
-      />
+      <client-only>
+        <div class="border-inactive !border-2 rounded-xl overflow-hidden">
+          <scrollFadeContainer
+            :maxHeight="500"
+            :fadeSize="80"
+          >
+            <VuePdfEmbed :source="pdfData" />
+          </scrollFadeContainer>
+        </div>
+      </client-only>
     </div>
     <div class="col-span-12 lg:col-span-4">
       <div class="custom-grid">
@@ -86,11 +90,13 @@
 <script setup>
 import { onMounted } from "vue";
 import userSignCard from "../userSignCard.vue";
+import scrollFadeContainer from "../../ui/scrollFadeContainer.vue";
+import VuePdfEmbed from "vue-pdf-embed";
 
 const { $axiosPlugin } = useNuxtApp();
 const config = useRuntimeConfig();
 const authUser = useSanctumUser();
-const pdfUrl = ref(null);
+const pdfData = ref(null);
 
 const props = defineProps({
   type: {
@@ -136,11 +142,11 @@ const getPdfFile = async () => {
       "/signed/" +
       props.document.uuid,
     {
-      responseType: "blob",
+      responseType: "arraybuffer",
     },
   );
 
-  pdfUrl.value = URL.createObjectURL(response.data);
+  pdfData.value = response.data;
 };
 
 onMounted(() => {
@@ -148,9 +154,6 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  if (pdfUrl.value) {
-    URL.revokeObjectURL(pdfUrl.value);
-    pdfUrl.value = null;
-  }
+  pdfData.value = null;
 });
 </script>
