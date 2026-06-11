@@ -1,7 +1,12 @@
 <template>
   <div v-if="pdfUrl" class="custom-grid">
     <div class="col-span-12 lg:col-span-8">
-      <iframe :src="pdfUrl" width="100%" height="500px" />
+      <object
+        :data="pdfUrl"
+        type="application/pdf"
+        width="100%"
+        height="500px"
+      ></object>
     </div>
     <div class="col-span-12 lg:col-span-4">
       <div class="custom-grid">
@@ -17,6 +22,7 @@
             >
               <userSignCard
                 :partyName="`${party.last_name} ${party.first_name} ${party.given_name || ''}`"
+                :iin="party.iin"
                 :partyTypeName="
                   party.is_mediator === 1
                     ? $t('pages.documents.mediator.title')

@@ -10,7 +10,19 @@
         <span class="text-inactive text-xs"> {{ props.partyTypeName }}: </span>
         <b>{{ props.partyName }}</b>
 
-        <div class="flex flex-wrap gap-x-4 gap-y-0.5">
+        <div class="flex flex-wrap gap-x-4 gap-y-2">
+          <div class="flex flex-col gap-y-0.5">
+            <span class="text-inactive text-xs">
+              {{ $t("form.iin.title") }}:
+            </span>
+            <b
+              class="text-xs"
+              >{{
+                props.iin
+              }}</b
+            >
+          </div>
+
           <div class="flex flex-col gap-y-0.5">
             <span class="text-inactive text-xs">
               {{ $t("pages.documents.sign.status") }}:
@@ -49,6 +61,10 @@ const props = defineProps({
     required: true,
   },
   partyTypeName: {
+    type: String,
+    required: true,
+  },
+  iin: {
     type: String,
     required: true,
   },

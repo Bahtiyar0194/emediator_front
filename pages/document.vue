@@ -11,7 +11,12 @@
                   <selectLocale />
                 </div>
               </div>
-              <iframe :src="pdfUrl" width="100%" height="100%" />
+              <object
+                :data="pdfUrl"
+                type="application/pdf"
+                width="100%"
+                height="100%"
+              ></object>
             </div>
           </div>
           <div class="col-span-12 lg:col-span-4">
@@ -30,6 +35,7 @@
                   >
                     <userSignCard
                       :partyName="`${party.last_name} ${party.first_name} ${party.given_name || ''}`"
+                      :iin="party.iin"
                       :partyTypeName="
                         party.is_mediator === 1
                           ? $t('pages.documents.mediator.title')
@@ -64,54 +70,61 @@
                   </div>
                 </div>
                 <div class="card-body">
-                  <div class="flex flex-col gap-y-4 items-center">
-                    <p class="text-center mb-0">
-                      Для просмотра документа пожалуйста войдите в личный
-                      кабинет
-                    </p>
-                    <nuxt-link
-                      class="btn btn-primary"
-                      :to="`/auth?redirect=/document?q=${uuid}`"
-                    >
-                      <i class="pi pi-sign-in"></i
-                      >{{ $t("pages.auth.title") }}</nuxt-link
-                    >
-                  </div>
-                  <div class="flex justify-center items-center relative my-6">
-                    <span class="bg-active z-10 px-2">{{ $t("or") }}</span>
-                    <hr class="absolute w-full" />
-                  </div>
-
-                  <div class="flex flex-col gap-y-4">
-                    <p
-                      class="text-center mb-0"
-                      :class="errorStatus ? 'text-danger' : ''"
-                    >
-                      {{
-                        $t(
-                          errorStatus === 401
-                            ? "form.phone.last4.required"
-                            : errorStatus === 403
-                              ? "form.phone.last4.not_found"
-                              : errorStatus === 429
-                                ? "errors.statuses.status_429"
-                                : "",
-                        )
-                      }}
-                    </p>
-
-                    <div class="flex gap-x-2 gap-y-4">
-                      <div class="form-group-border active w-full">
-                        <i class="pi pi-mobile"></i>
-                        <input v-mask="'####'" v-model="lastFourNumber" />
-                        <label>{{ $t("form.phone.last4.title") }}</label>
-                      </div>
-
-                      <button class="btn btn-primary" @click="getPdfFile()">
-                        <i class="pi pi-arrow-right"></i>
-                      </button>
+                  <p
+                    v-if="errorStatus === 403 && authUser.user_id"
+                    class="text-danger font-medium mb-0"
+                  >
+                    {{ $t("pages.documents.view.access_denied") }}
+                  </p>
+                  <template v-else>
+                    <div class="flex flex-col gap-y-4 items-center">
+                      <p class="text-center mb-0">
+                        {{ $t("pages.documents.view.description") }}
+                      </p>
+                      <nuxt-link
+                        class="btn btn-primary"
+                        :to="`/auth?redirect=/document?q=${uuid}`"
+                      >
+                        <i class="pi pi-sign-in"></i
+                        >{{ $t("pages.auth.title") }}</nuxt-link
+                      >
                     </div>
-                  </div>
+                    <div class="flex justify-center items-center relative my-6">
+                      <span class="bg-active z-10 px-2">{{ $t("or") }}</span>
+                      <hr class="absolute w-full" />
+                    </div>
+
+                    <div class="flex flex-col gap-y-4">
+                      <p
+                        class="text-center mb-0"
+                        :class="errorStatus ? 'text-danger' : ''"
+                      >
+                        {{
+                          $t(
+                            errorStatus === 401
+                              ? "form.phone.last4.required"
+                              : errorStatus === 403
+                                ? "form.phone.last4.not_found"
+                                : errorStatus === 429
+                                  ? "errors.statuses.status_429"
+                                  : "",
+                          )
+                        }}
+                      </p>
+
+                      <div class="flex gap-x-2 gap-y-4">
+                        <div class="form-group-border active w-full">
+                          <i class="pi pi-mobile"></i>
+                          <input v-mask="'####'" v-model="lastFourNumber" />
+                          <label>{{ $t("form.phone.last4.title") }}</label>
+                        </div>
+
+                        <button class="btn btn-primary" @click="getPdfFile()">
+                          <i class="pi pi-arrow-right"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </template>
                 </div>
               </div>
             </div>
