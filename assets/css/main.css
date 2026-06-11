@@ -1872,7 +1872,7 @@ select.error:has(option:checked:disabled) {
 
 .modal-body{
     @apply overflow-y-auto overflow-x-hidden;
-    max-height: 85vh;
+    max-height: 80vh;
 }
 
 .modal-footer{

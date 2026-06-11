@@ -60,6 +60,7 @@
                   v-if="pending"
                   :className="'overlay'"
                   :showPendingText="true"
+                  :pendingText="$t('pages.documents.view.loading')"
                 />
                 <div class="card-header">
                   <div class="title-wrap items-center">

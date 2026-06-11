@@ -1,12 +1,12 @@
 <template>
+  <div class="py-8" v-if="pending">
+    <loader :className="'overlay !relative'" :showPendingText="true" :pendingText="$t('pages.documents.view.loading')" />
+  </div>
   <div v-if="pdfData" class="custom-grid">
     <div class="col-span-12 lg:col-span-8">
       <client-only>
         <div class="border-inactive !border-2 rounded-xl overflow-hidden">
-          <scrollFadeContainer
-            :maxHeight="500"
-            :fadeSize="80"
-          >
+          <scrollFadeContainer :maxHeight="500" :fadeSize="80">
             <VuePdfEmbed :source="pdfData" />
           </scrollFadeContainer>
         </div>
@@ -92,11 +92,13 @@ import { onMounted } from "vue";
 import userSignCard from "../userSignCard.vue";
 import scrollFadeContainer from "../../ui/scrollFadeContainer.vue";
 import VuePdfEmbed from "vue-pdf-embed";
+import loader from "../../ui/loader.vue";
 
 const { $axiosPlugin } = useNuxtApp();
 const config = useRuntimeConfig();
 const authUser = useSanctumUser();
 const pdfData = ref(null);
+const pending = ref(true);
 
 const props = defineProps({
   type: {
@@ -135,18 +137,32 @@ const canEdit = () => {
 };
 
 const getPdfFile = async () => {
-  const response = await $axiosPlugin.get(
-    config.public.apiBase +
-      "/document/get_file/" +
-      props.type +
-      "/signed/" +
-      props.document.uuid,
-    {
-      responseType: "arraybuffer",
-    },
-  );
+  try {
+    pending.value = true;
 
-  pdfData.value = response.data;
+    const response = await $axiosPlugin.get(
+      config.public.apiBase +
+        "/document/get_file/" +
+        props.type +
+        "/signed/" +
+        props.document.uuid,
+      {
+        responseType: "arraybuffer",
+      },
+    );
+
+    if (response.data) {
+      setTimeout(() => {
+        pdfData.value = response.data;
+        pending.value = false;
+      }, 1000);
+    }
+  } catch (error) {
+    pending.value = false;
+    if (error.response.status) {
+      errorStatus.value = error.response.status;
+    }
+  }
 };
 
 onMounted(() => {
