@@ -11,12 +11,12 @@
                   <selectLocale />
                 </div>
               </div>
-              <object
-                :data="pdfUrl"
+              <embed
+                :src="pdfUrl"
                 type="application/pdf"
                 width="100%"
                 height="100%"
-              ></object>
+              />
             </div>
           </div>
           <div class="col-span-12 lg:col-span-4">

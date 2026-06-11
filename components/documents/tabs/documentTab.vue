@@ -1,12 +1,12 @@
 <template>
   <div v-if="pdfUrl" class="custom-grid">
     <div class="col-span-12 lg:col-span-8">
-      <object
-        :data="pdfUrl"
+      <embed
+        :src="pdfUrl"
         type="application/pdf"
         width="100%"
         height="500px"
-      ></object>
+      />
     </div>
     <div class="col-span-12 lg:col-span-4">
       <div class="custom-grid">
