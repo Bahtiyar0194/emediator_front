@@ -12,40 +12,44 @@
                 </div>
               </div>
               <client-only>
-                <scrollFadeContainer
-                  :maxHeight="600"
-                  :fadeSize="80"
-                >
+                <scrollFadeContainer :maxHeight="600" :fadeSize="80">
                   <VuePdfEmbed :source="pdfData" />
                 </scrollFadeContainer>
               </client-only>
             </div>
           </div>
           <div class="col-span-12 lg:col-span-4">
-              <ul class="list-group !px-6 !py-4">
-                <li>
-                  <p class="text-inactive text-xl mb-0">
-                    {{ $t("pages.documents.parties") }}:
-                    <b>{{ currentDocument.parties.length }}</b>
-                  </p>
-                </li>
-                <template
-                  v-for="(party, partyIndex) in currentDocument.parties"
-                  :key="partyIndex"
-                >
-                  <userSignCard
-                    :partyName="`${party.last_name} ${party.first_name} ${party.given_name || ''}`"
-                    :iin="party.iin"
-                    :partyTypeName="
-                      party.is_mediator === 1
-                        ? $t('pages.documents.mediator.title')
-                        : $t('pages.documents.party_' + (partyIndex + 1))
-                    "
-                    :signId="party.sigex_sign_id"
-                    :signedAt="party.signed_at"
-                  />
-                </template>
-              </ul>
+            <ul class="list-group !px-6 !py-4">
+              <li>
+                <p class="text-inactive text-xl mb-0">
+                  {{ $t("pages.documents.parties") }}:
+                  <b>{{ currentDocument.parties.length }}</b>
+                </p>
+              </li>
+              <template
+                v-for="(party, partyIndex) in currentDocument.parties"
+                :key="partyIndex"
+              >
+                <userSignCard
+                  :partyName="`${party.last_name} ${party.first_name} ${party.given_name || ''}`"
+                  :iin="party.iin"
+                  :partyTypeName="
+                    party.is_mediator === 1
+                      ? $t('pages.documents.mediator.title')
+                      : $t('pages.documents.party_' + (partyIndex + 1))
+                  "
+                  :signId="party.sigex_sign_id"
+                  :signedAt="party.signed_at"
+                />
+              </template>
+
+              <li>
+                            <button class="btn btn-outline-danger" @click="getPdfFile('blob')">
+              <i class="pi pi-file-pdf"></i>
+              {{ $t("download_pdf") }}
+            </button>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -70,7 +74,7 @@
                 </div>
                 <div class="card-body">
                   <p
-                    v-if="errorStatus === 403 && authUser.user_id"
+                    v-if="errorStatus === 403 && authUser && authUser.user_id"
                     class="text-danger font-medium mb-0"
                   >
                     {{ $t("pages.documents.view.access_denied") }}
@@ -106,7 +110,7 @@
                                 ? "form.phone.last4.not_found"
                                 : errorStatus === 429
                                   ? "errors.statuses.status_429"
-                                  : "",
+                                  : "errors.statuses.status_undefined",
                           )
                         }}
                       </p>
@@ -118,7 +122,10 @@
                           <label>{{ $t("form.phone.last4.title") }}</label>
                         </div>
 
-                        <button class="btn btn-primary" @click="getPdfFile()">
+                        <button
+                          class="btn btn-primary"
+                          @click="getPdfFile('arraybuffer')"
+                        >
                           <i class="pi pi-arrow-right"></i>
                         </button>
                       </div>
@@ -169,7 +176,7 @@ const getDocument = async () => {
     .get("document/get/" + uuid)
     .then((response) => {
       currentDocument.value = response.data;
-      getPdfFile();
+      getPdfFile("arraybuffer");
     })
     .catch((err) => {
       if (err.response) {
@@ -187,9 +194,12 @@ const getDocument = async () => {
     });
 };
 
-const getPdfFile = async () => {
+const getPdfFile = async (type) => {
   try {
-    pending.value = true;
+    if (type === "arraybuffer") {
+      pending.value = true;
+    }
+
     const response = await $axiosPlugin.get(
       config.public.apiBase +
         "/document/get_file/" +
@@ -199,11 +209,29 @@ const getPdfFile = async () => {
         "?phone=" +
         lastFourNumber.value,
       {
-        responseType: "arraybuffer",
+        responseType: type,
       },
     );
 
-    pdfData.value = response.data;
+    if (type === "arraybuffer") {
+      setTimeout(() => {
+        pdfData.value = response.data;
+      }, 1000);
+    }
+
+    if (type === "blob") {
+      const blob = response.data;
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = uuid + ".pdf";
+      a.click();
+
+      // Чистим за собой
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }
   } catch (error) {
     pending.value = false;
     if (error.response.status) {

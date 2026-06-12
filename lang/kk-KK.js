@@ -15,6 +15,7 @@ export default {
     export_to_png: "PNG экпорттау",
     export_to_xlsx: "XLSX экспорттау",
     export_to_pdf: "PDF экпорттау",
+    download_pdf: "PDF жүктеп алу",
     click_to_listen_to_the_audio: "Аудионы тыңдау үшін басыңыз",
     all_rights: 'Барлық құқықтар сақталған.',
     choose_your_language: 'Тілді таңдаңыз',

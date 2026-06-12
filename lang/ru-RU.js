@@ -15,6 +15,7 @@ export default {
     export_to_png: "Экспорт в PNG",
     export_to_xlsx: "Экспорт в XLSX",
     export_to_pdf: "Экспорт в PDF",
+    download_pdf: "Скачать PDF",
     click_to_listen_to_the_audio: "Кликните чтобы прослушать аудио",
     all_rights: 'Все права защищены.',
     choose_your_language: 'Выберите Ваш язык',

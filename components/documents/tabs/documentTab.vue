@@ -1,6 +1,10 @@
 <template>
   <div class="py-8" v-if="pending">
-    <loader :className="'overlay !relative'" :showPendingText="true" :pendingText="$t('pages.documents.view.loading')" />
+    <loader
+      :className="'overlay !relative'"
+      :showPendingText="true"
+      :pendingText="$t('pages.documents.view.loading')"
+    />
   </div>
   <div v-if="pdfData" class="custom-grid">
     <div class="col-span-12 lg:col-span-8">
@@ -80,6 +84,11 @@
               <i class="pi pi-pencil"></i>
               {{ $t("edit") }}
             </button>
+
+            <button class="btn btn-light" @click="getPdfFile('blob')">
+              <i class="pi pi-file-pdf"></i>
+              {{ $t("download_pdf") }}
+            </button>
           </div>
         </div>
       </div>
@@ -136,9 +145,11 @@ const canEdit = () => {
   return props.document.parties.some((p) => !p.sigex_sign_id);
 };
 
-const getPdfFile = async () => {
+const getPdfFile = async (type) => {
   try {
-    pending.value = true;
+    if (type === "arraybuffer") {
+      pending.value = true;
+    }
 
     const response = await $axiosPlugin.get(
       config.public.apiBase +
@@ -147,26 +158,39 @@ const getPdfFile = async () => {
         "/signed/" +
         props.document.uuid,
       {
-        responseType: "arraybuffer",
+        responseType: type,
       },
     );
 
-    if (response.data) {
-      setTimeout(() => {
-        pdfData.value = response.data;
-        pending.value = false;
-      }, 1000);
+    if (type === "arraybuffer") {
+      if (response.data) {
+        setTimeout(() => {
+          pdfData.value = response.data;
+          pending.value = false;
+        }, 1000);
+      }
+    }
+
+    if (type === "blob") {
+      const blob = response.data;
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = props.document.uuid + ".pdf";
+      a.click();
+
+      // Чистим за собой
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
     }
   } catch (error) {
     pending.value = false;
-    if (error.response.status) {
-      errorStatus.value = error.response.status;
-    }
   }
 };
 
 onMounted(() => {
-  getPdfFile();
+  getPdfFile("arraybuffer");
 });
 
 onBeforeUnmount(() => {
