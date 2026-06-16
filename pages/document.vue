@@ -44,10 +44,13 @@
               </template>
 
               <li>
-                            <button class="btn btn-outline-danger" @click="getPdfFile('blob')">
-              <i class="pi pi-file-pdf"></i>
-              {{ $t("download_pdf") }}
-            </button>
+                <button
+                  class="btn btn-outline-danger"
+                  @click="getPdfFile('blob')"
+                >
+                  <i class="pi pi-file-pdf"></i>
+                  {{ $t("download_pdf") }}
+                </button>
               </li>
             </ul>
           </div>

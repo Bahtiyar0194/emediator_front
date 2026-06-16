@@ -9,6 +9,7 @@
   <div class="col-span-12" v-if="points.length">
     <div class="custom-grid">
       <div class="col-span-12">
+        <textEditorToolbar />
         <TransitionGroup
           tag="ul"
           class="list-group nowrap"
@@ -24,13 +25,6 @@
           />
         </TransitionGroup>
       </div>
-
-      <!-- <div class="col-span-12">
-        <button type="button" class="btn btn-sm btn-outline-success">
-          <i class="pi pi-plus"></i>
-          {{ $t("pages.documents.point.add") }}
-        </button>
-      </div> -->
 
       <div v-if="mode === 'create'" class="col-span-12">
         <div class="custom-grid">
@@ -74,6 +68,7 @@
 import { sanitize } from "../../../utils/sanitize";
 import pointItem from "../pointItem.vue";
 import stepName from "../../ui/stepName.vue";
+import textEditorToolbar from "../../ui/textEditorToolbar.vue";
 
 const props = defineProps({
   errors: {

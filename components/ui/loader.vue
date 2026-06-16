@@ -12,7 +12,7 @@
         <span class="blink animation-delay:0.3s">.</span>
         <span class="blink animation-delay:0.6s">.</span>
       </p>
-      <p class="font-bold">{{ props.progress }}%</p>
+      <p class="font-medium">{{ props.progress }}%</p>
     </div>
     <div v-if="props.showPendingText === true" class="pt-2 text-center mt-1">
       <p class="font-medium mb-0 dots">

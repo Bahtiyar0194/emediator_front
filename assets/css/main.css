@@ -1263,7 +1263,7 @@ select.error:has(option:checked:disabled) {
 }
 
 .btn-wrap{
-    @apply flex gap-2 flex-wrap;
+    @apply flex gap-2 flex-wrap relative;
 }
 
 .btn-wrap.lg{
@@ -2063,20 +2063,16 @@ select.error:has(option:checked:disabled) {
     @apply text-corp;
 }
 
-.tab-header{
-    @apply flex gap-2 mb-6;
+.tab-header-wrap{
+    @apply flex flex-wrap gap-y-1 border-inactive w-full md:max-w-fit p-1 rounded-xl overflow-hidden relative;
 }
 
 .tab-header-item{
-    @apply px-3 py-2 border-active bg-active rounded-xl hover:cursor-pointer text-active flex items-center relative font-medium;
+    @apply px-3 py-2 hover:cursor-pointer text-active flex items-center relative font-medium max-md:w-full max-md:justify-center;
 }
 
 .tab-header-item.active{
-    @apply bg-success text-white cursor-default; 
-}
-
-.tab-header-item.active.success{
-    @apply border-success text-success; 
+    @apply text-white cursor-default; 
 }
 
 .tab-header-item > span{
@@ -2105,6 +2101,16 @@ select.error:has(option:checked:disabled) {
 .tab-body-item {
     width: 100%;
     flex-shrink: 0;
+}
+
+.tab-bg-slider {
+  /* Плавная анимация для всех изменений: размеров и позиции */
+  transition: 
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+    width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+     @apply absolute top-0 left-0 bg-success rounded-lg pointer-events-none
 }
 
 .progress{
@@ -2368,6 +2374,48 @@ select.error:has(option:checked:disabled) {
 }
 
 .vue-pdf-embed__page {
-  margin-bottom: 20px;
-  box-shadow: 0 0 4px rgba(0,0,0,.15);
+    margin-bottom: 20px;
+    box-shadow: 0 0 4px rgba(0,0,0,.15);
+}
+
+/* Стили для того, чтобы таблица в редакторе отображалась корректно */
+.ProseMirror table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+.ProseMirror td,
+.ProseMirror th {
+    border: 1px solid #000;
+    padding: 3px 5px;
+    vertical-align: top;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.ProseMirror th {
+    @apply bg-corp font-medium text-left text-white;
+}
+
+/* Разрешаем выделение текста внутри редактора */
+.ProseMirror {
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+/* Стили для выделенных ячеек таблицы (когда тянем мышкой) */
+.ProseMirror table .selectedCell {
+    @apply bg-corp-100 relative;
+}
+
+/* Дополнительно убираем стандартное браузерное выделение поверх табличного */
+.ProseMirror table {
+  user-select: none; /* Отключаем дефолтное текстовое выделение для самой таблицы */
+}
+
+/* Но возвращаем его для содержимого ячеек (параграфов), чтобы можно было выделять сам текст */
+.ProseMirror table p {
+  user-select: text;
 }

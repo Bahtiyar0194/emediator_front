@@ -1,7 +1,7 @@
 <template>
   <li class="!border-none" :ref="(el) => setItemRef(el, node.point_id)">
     <div
-      class="transition-all duration-300"
+      class="transition-all duration-300 rounded-xl"
       :class="{
         highlight: highlightedId === node.point_id,
         removing: removingId === node.point_id,
@@ -46,7 +46,7 @@
                 </button>
               </li>
 
-              <li>
+              <li v-if="parentList.length > 1 || props.path.length > 1">
                 <button
                   type="button"
                   class="!text-red-500"
@@ -61,7 +61,7 @@
       </div>
 
       <!-- EDITOR -->
-      <div class="p-3 bg-active border-inactive rounded-b-xl">
+      <div class="p-3 border-inactive rounded-b-xl">
         <div class="custom-grid">
           <textEditor
             :modelValue="node.content"

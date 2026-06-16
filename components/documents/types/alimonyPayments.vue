@@ -136,7 +136,7 @@
         {{
           errors["agreement_data.monthly_amount"]
             ? errors["agreement_data.monthly_amount"][0]
-            : $t("pages.documents.monthly_amount")
+            : $t("pages.documents.monthly.amount.title")
         }}
       </label>
     </div>
@@ -153,7 +153,7 @@
       <label :class="{ 'label-error': getError('start_payment_date') }">
         {{
           getError("start_payment_date") ||
-          $t("pages.documents.start_payment_date")
+          $t("pages.documents.start_payment_date.title")
         }}
       </label>
     </div>

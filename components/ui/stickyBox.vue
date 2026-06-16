@@ -1,6 +1,6 @@
 <template>
   <div
-    class="sticky"
+    class="sticky z-20"
     :class="props.className"
     :style="{
       top: (props.offsetTop >= 0 ? props.offsetTop : -10) + 'px',

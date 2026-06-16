@@ -383,13 +383,61 @@
       </div>
     </template>
   </modal>
+
+  <modal
+    :show="tableModalIsVisible"
+    :onClose="() => (tableModalIsVisible = false)"
+    :loaderOpacityFull="true"
+    :className="'modal-lg'"
+    :showLoader="false"
+    :showPendingText="false"
+    :closeOnClickSelf="false"
+  >
+    <template v-slot:header_content>
+      <h4>
+        {{ $t("table.add") }}
+      </h4>
+    </template>
+    <template v-slot:body_content>
+      <tabs :tabs="table_tabs_data" :activeTabIndex="0" :showTabHeader="true" />
+    </template>
+  </modal>
+
+  <modal
+    :show="deleteTableModalIsVisible"
+    :onClose="() => (deleteTableModalIsVisible = false)"
+    :loaderOpacityFull="true"
+    :className="'modal-lg'"
+    :showLoader="false"
+    :showPendingText="false"
+    :closeOnClickSelf="false"
+  >
+    <template v-slot:header_content>
+      <h4>
+        {{ $t("table.delete.title_alt") }}
+      </h4>
+    </template>
+    <template v-slot:body_content>
+      <p>{{ $t("table.delete.confirm") }}</p>
+      <div class="btn-wrap justify-end mt-4">
+        <button @click="deleteTableConfirm()" class="btn btn-outline-danger">
+          <i class="pi pi-trash"></i>
+          {{ $t("yes") }}
+        </button>
+        <button @click="deleteModalIsVisible = false" class="btn btn-light">
+          <i class="pi pi-ban"></i>
+          {{ $t("no") }}
+        </button>
+      </div>
+    </template>
+  </modal>
 </template>
 
 <script setup>
 import modal from "@/components/ui/modal.vue";
 import scrollFadeContainer from "../../components/ui/scrollFadeContainer.vue";
-import tabs from "../../components/ui/tabs.vue";
 import documentTab from "../../components/documents/tabs/documentTab.vue";
+import tabs from "../../components/ui/tabs.vue";
 import loader from "../../components/ui/loader.vue";
 import alert from "../../components/ui/alert.vue";
 import steps from "@/components/ui/steps.vue";
@@ -399,6 +447,8 @@ import pagination from "../../components/ui/pagination.vue";
 import sortTableHead from "../../components/ui/sortTableHead.vue";
 import userAvatar from "../../components/ui/userAvatar.vue";
 import signButtons from "../../components/sign/signButtons.vue";
+import custom from "../../components/table/custom.vue";
+import graphic from "../../components/table/graphic.vue";
 import { debounceHandler } from "../../utils/debounceHandler";
 
 import partiesForm from "../../components/documents/partiesForm.vue";
@@ -458,6 +508,58 @@ const points = ref([]); // Копия для мутации и отправки 
 const previewDocument = ref([]);
 
 const myTemplates = ref([]);
+
+// Сюда будет сохраняться ссылка на редактор, в который кликнули
+const activeEditor = ref(null);
+
+// Делимся этой переменной и функцией её изменения со всеми подкомпонентами внизу
+provide("activeEditorContext", {
+  activeEditor,
+  setActiveEditor: (editorInstance) => {
+    activeEditor.value = editorInstance;
+  },
+});
+
+const tableModalIsVisible = ref(false);
+const deleteTableModalIsVisible = ref(false);
+
+const openTableModal = () => {
+  tableModalIsVisible.value = true;
+};
+
+const closeTableModal = () => {
+  tableModalIsVisible.value = false;
+};
+
+const openDeleteTableModal = () => {
+  deleteTableModalIsVisible.value = true;
+};
+
+const deleteTableConfirm = () => {
+  activeEditor.value?.chain().focus().deleteTable().run();
+  deleteTableModalIsVisible.value = false;
+};
+
+provide("openTableModal", openTableModal);
+provide("closeTableModal", closeTableModal);
+provide("openDeleteTableModal", openDeleteTableModal);
+
+const table_tabs_data = computed(() => [
+  {
+    name: "custom",
+    title: t("table.custom.title"),
+    icon: "pi pi-table",
+    component: custom,
+    props: {},
+  },
+  {
+    name: "repayment_schedule",
+    title: t("table.repayment_schedule.title"),
+    icon: "pi pi-calendar",
+    component: graphic,
+    props: {},
+  },
+]);
 
 useHead({
   title: t("pages.dashboard.title"),

@@ -76,6 +76,7 @@
     <div class="col-span-12" v-if="points.length">
       <div class="custom-grid">
         <div class="col-span-12">
+          <textEditorToolbar />
           <TransitionGroup
             tag="ul"
             class="list-group nowrap"
@@ -132,6 +133,7 @@ import { inject, onBeforeUnmount, onMounted } from "vue";
 import { sanitize } from "../../../utils/sanitize";
 import pointItem from "../pointItem.vue";
 import stepName from "../../ui/stepName.vue";
+import textEditorToolbar from "../../ui/textEditorToolbar.vue";
 
 const props = defineProps({
   errors: {
