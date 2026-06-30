@@ -28,4 +28,32 @@ export const createDataCollection = () => ({
         building: null,
         cabinet: null,
     },
+
+    attorney: {
+        includes: false,
+        type_id: null,
+        num: null,
+        date: null,
+
+        person: {
+            last_name: null,
+            first_name: null,
+            given_name: null,
+            iin: null,
+
+            data: {
+                phone: null,
+                email: null,
+
+                location: {
+                    id: null,
+                    is_district: false,
+                    village: null,
+                    street: null,
+                    house: null,
+                    flat: null,
+                },
+            }
+        }
+    }
 });

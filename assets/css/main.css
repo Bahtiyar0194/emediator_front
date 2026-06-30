@@ -656,7 +656,7 @@ ul > li::marker
 }
 
 hr{
-    @apply border-inactive my-3;
+    @apply my-3;
 }
 
 blockquote{
@@ -2389,7 +2389,7 @@ select.error:has(option:checked:disabled) {
 .ProseMirror td,
 .ProseMirror th {
     border: 1px solid #000;
-    padding: 3px 5px;
+    padding: 2px;
     vertical-align: top;
     box-sizing: border-box;
     position: relative;

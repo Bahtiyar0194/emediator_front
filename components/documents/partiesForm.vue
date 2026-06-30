@@ -11,6 +11,7 @@
         :locations="locations"
         :legalForms="legalForms"
         :posts="posts"
+        :attorneyTypes="attorneyTypes"
         :subjectTypes="subjectTypes"
         :docData="docData"
         :getUserById="getUserById"
@@ -43,6 +44,11 @@ const props = defineProps({
     required: true,
   },
 
+  attorneyTypes: {
+    type: Object,
+    required: true,
+  },
+
   subjectTypes: {
     type: Object,
     required: true,
@@ -59,6 +65,13 @@ const props = defineProps({
   },
 });
 
-const { errors, locations, legalForms, posts, subjectTypes, docData } =
-  toRefs(props);
+const {
+  errors,
+  locations,
+  legalForms,
+  posts,
+  attorneyTypes,
+  subjectTypes,
+  docData,
+} = toRefs(props);
 </script>

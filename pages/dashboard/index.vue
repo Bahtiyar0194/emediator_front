@@ -434,6 +434,7 @@
 </template>
 
 <script setup>
+import { defu } from "defu";
 import modal from "@/components/ui/modal.vue";
 import scrollFadeContainer from "../../components/ui/scrollFadeContainer.vue";
 import documentTab from "../../components/documents/tabs/documentTab.vue";
@@ -488,6 +489,7 @@ const currentAgreement = ref(null);
 const locations = ref([]);
 const legalForms = ref([]);
 const posts = ref([]);
+const attorneyTypes = ref([]);
 const agreementTypes = ref([]);
 const banks = ref([]);
 const colors = ref([]);
@@ -649,9 +651,14 @@ const openModal = (action) => {
         currentAgreement.value.agreement.initiator_id;
 
       docData.value = {
-        agreement_parties: currentAgreement.value.agreement.parties.filter(
-          (p) => p.is_mediator === 0,
-        ),
+        agreement_parties: currentAgreement.value.agreement.parties
+          .filter((p) => p.is_mediator === 0)
+          .map((backendParty) => {
+            // Берутся данные стороны из бэкенда, и если в объекте 'data'
+            // отсутствуют какие-то новые поля, defu берет их из свежего createParty()
+            return defu(backendParty, createParty());
+          }),
+
         agreement_type_id: currentAgreement.value.agreement.agreement_type_id,
         custom_template: {
           id: currentAgreement.value.agreement.custom_template_id || null,
@@ -687,9 +694,9 @@ const closeModal = () => {
   errors.value = [];
   modalIsVisible.value = false;
   agreementModalIsVisible.value = false;
-  currentAgreement.value = null;
 
   setTimeout(() => {
+    currentAgreement.value = null;
     docData.value = null;
     mode.value = null;
     points.value = [];
@@ -762,7 +769,7 @@ const agreementsTableHeads = [
   },
 ];
 
-const getUserById = async (partyIndex, iin) => {
+const getUserById = async (partyIndex, iin, attorney) => {
   if (iin.length === 12) {
     pendingModal.value = true;
 
@@ -772,15 +779,15 @@ const getUserById = async (partyIndex, iin) => {
         pendingModal.value = false;
         if (res.data.user) {
           const user = res.data.user;
-          docData.value.agreement_parties[partyIndex].first_name =
-            user.first_name;
-          docData.value.agreement_parties[partyIndex].last_name =
-            user.last_name;
-          docData.value.agreement_parties[partyIndex].given_name =
-            user.given_name;
 
-          if (user.data) {
-            docData.value.agreement_parties[partyIndex].data = user.data;
+          if (attorney === false) {
+            docData.value.agreement_parties[partyIndex] = defu(
+              user,
+              createParty(),
+            );
+          } else {
+            docData.value.agreement_parties[partyIndex].data.attorney.person =
+              defu(user, createParty());
           }
         }
       })
@@ -810,6 +817,7 @@ const documentSteps = [
       locations,
       legalForms,
       posts,
+      attorneyTypes,
       subjectTypes,
       docData,
       getUserById,
@@ -864,6 +872,7 @@ const getAttributes = async () => {
       locations.value = res.data.locations;
       legalForms.value = res.data.legal_forms;
       posts.value = res.data.posts;
+      attorneyTypes.value = res.data.attorney_types;
       agreementTypes.value = res.data.agreement_types;
       banks.value = res.data.banks;
       colors.value = res.data.colors;

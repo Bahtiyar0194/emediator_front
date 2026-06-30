@@ -37,23 +37,25 @@
       </div>
     </div>
 
-    <div class="col-span-12">
-      <div class="form-group-border active">
-        <i class="pi pi-money-bill"></i>
-        <input v-model="paymentAmount" type="number" placeholder=" " />
-        <label
-          :class="{
-            'label-error': errors.payment_amount,
-          }"
-        >
-          {{
-            errors.payment_amount
-              ? $t("pages.documents." + paymentFormat + ".amount.required")
-              : $t("pages.documents." + paymentFormat + ".amount.title")
-          }}
-        </label>
+    <client-only>
+      <div class="col-span-12">
+        <div class="form-group-border active">
+          <i class="pi pi-money-bill"></i>
+          <input v-model="formattedValue" v-digits-only placeholder=" " />
+          <label
+            :class="{
+              'label-error': errors.payment_amount,
+            }"
+          >
+            {{
+              errors.payment_amount
+                ? $t("pages.documents." + paymentFormat + ".amount.required")
+                : $t("pages.documents." + paymentFormat + ".amount.title")
+            }}
+          </label>
+        </div>
       </div>
-    </div>
+    </client-only>
 
     <div class="col-span-12">
       <div class="form-group-border active">
@@ -88,6 +90,7 @@
 
 <script setup>
 import { ref, inject } from "vue";
+import { useFormattedAmount } from "../../composables/useFormattedAmount";
 
 const closeTableModal = inject("closeTableModal");
 
@@ -100,8 +103,10 @@ const errors = ref({
 const paymentFormats = ["monthly", "daily"];
 const paymentFormat = ref(paymentFormats[0]);
 const startDate = ref("");
-const paymentAmount = ref("");
 const paymentsCount = ref("");
+
+// Просто вызываем хук. Можно передать дефолтное значение, например "50000"
+const { rawValue: paymentAmount, formattedValue } = useFormattedAmount("");
 
 // Забираем контекст активного редактора
 const context = inject("activeEditorContext", null);
@@ -124,6 +129,7 @@ const insertAmortizationSchedule = () => {
   if (!startDate.value) {
     errors.value.start_date = true;
   }
+
   if (!amount || amount <= 0) {
     errors.value.payment_amount = true;
   }

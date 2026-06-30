@@ -30,17 +30,7 @@
                 v-for="(party, partyIndex) in currentDocument.parties"
                 :key="partyIndex"
               >
-                <userSignCard
-                  :partyName="`${party.last_name} ${party.first_name} ${party.given_name || ''}`"
-                  :iin="party.iin"
-                  :partyTypeName="
-                    party.is_mediator === 1
-                      ? $t('pages.documents.mediator.title')
-                      : $t('pages.documents.party_' + (partyIndex + 1))
-                  "
-                  :signId="party.sigex_sign_id"
-                  :signedAt="party.signed_at"
-                />
+                <userSignCard :party="party" :partyIndex="partyIndex" />
               </template>
 
               <li>
