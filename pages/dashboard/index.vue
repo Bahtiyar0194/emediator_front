@@ -331,6 +331,8 @@
         :getQR="getQR"
         :clearQR="clearQR"
         :reloadPage="reloadPage"
+        :document="currentAgreement"
+        :docMode="docMode"
       />
     </template>
   </modal>

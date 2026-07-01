@@ -2,6 +2,65 @@
   <template v-if="signError">
     <p class="font-medium text-danger">{{ signError.message }}</p>
     <p>{{ signError.description }}</p>
+
+    <template
+      v-if="
+        props.document &&
+        props.docMode &&
+        signError?.description &&
+        sigexErrorMessages.some((msg) =>
+          signError.description.trim().includes(msg),
+        )
+      "
+    >
+      <p class="font-medium">
+        {{ $t("errors.sigex.iin") }}
+      </p>
+
+      <p class="text-inactive">
+        {{ $t("pages.documents.parties") }}:
+        <b>{{ props.document[props.docMode].parties.length }}</b>
+      </p>
+      <ul class="list-group mb-4">
+        <li
+          v-for="(party, partyIndex) in props.document[props.docMode].parties"
+          :key="partyIndex"
+        >
+          <template
+            v-if="party.data.attorney && party.data.attorney.includes === true"
+          >
+            <div class="flex flex-col gap-1">
+              <b
+                >{{ party.data.attorney.person.last_name || "" }}
+                {{ party.data.attorney.person.first_name || "" }}
+                {{ party.data.attorney.person.given_name || "" }}</b
+              >
+              <div class="flex flex-wrap gap-1">
+                <span class="text-inactive text-xs">
+                  {{ $t("form.iin.title") }}:
+                </span>
+                <b class="text-xs">{{ party.data.attorney.person.iin }}</b>
+              </div>
+            </div>
+          </template>
+          <template v-else>
+            <div class="flex flex-col gap-1">
+              <b
+                >{{ party.last_name || "" }}
+                {{ party.first_name || "" }}
+                {{ party.given_name || "" }}</b
+              >
+              <div class="flex flex-wrap gap-1">
+                <span class="text-inactive text-xs">
+                  {{ $t("form.iin.title") }}:
+                </span>
+                <b class="text-xs">{{ party.iin }}</b>
+              </div>
+            </div>
+          </template>
+        </li>
+      </ul>
+    </template>
     <button @click="props.reloadPage" class="btn btn-outline-primary">
       <i class="pi pi-refresh"></i>
       {{ $t("restart") }}
@@ -127,7 +186,24 @@ const props = defineProps({
     type: Function,
     required: true,
   },
+
+  document: {
+    type: Object,
+    required: false,
+    default: null,
+  },
+
+  docMode: {
+    type: String,
+    required: false,
+    default: "",
+  },
 });
 
 const { signError, signQR } = toRefs(props);
+
+const sigexErrorMessages = [
+  "Signature does not conform to document settings requirements",
+  "Signature violates IIN uniqueness requirement configured in the document settings",
+];
 </script>
