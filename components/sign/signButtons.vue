@@ -21,7 +21,7 @@
         {{ $t("pages.documents.parties") }}:
         <b>{{ props.document[props.docMode].parties.length }}</b>
       </p>
-      <ul class="list-group mb-4">
+      <ul class="list-group sm mb-4">
         <li
           v-for="(party, partyIndex) in props.document[props.docMode].parties"
           :key="partyIndex"
@@ -30,6 +30,15 @@
             v-if="party.data.attorney && party.data.attorney.includes === true"
           >
             <div class="flex flex-col gap-1">
+              <span class="text-inactive text-xs">
+                {{
+                  party.is_mediator === 1
+                    ? $t("pages.documents.mediator.title")
+                    : $t("form.attorney.representative", {
+                        index: partyIndex + 1,
+                      })
+                }}:
+              </span>
               <b
                 >{{ party.data.attorney.person.last_name || "" }}
                 {{ party.data.attorney.person.first_name || "" }}
@@ -45,6 +54,13 @@
           </template>
           <template v-else>
             <div class="flex flex-col gap-1">
+              <span class="text-inactive text-xs">
+                {{
+                  party.is_mediator === 1
+                    ? $t("pages.documents.mediator.title")
+                    : $t("pages.documents.party_" + (partyIndex + 1))
+                }}:
+              </span>
               <b
                 >{{ party.last_name || "" }}
                 {{ party.first_name || "" }}

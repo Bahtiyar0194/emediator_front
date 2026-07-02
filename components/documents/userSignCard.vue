@@ -33,13 +33,17 @@
             <b class="text-xs">{{ props.party.iin }}</b>
           </div>
 
-          <hr class="!my-0.5">
+          <hr class="!my-0.5" />
         </template>
         <span class="text-inactive text-xs">
           {{
             props.party.is_mediator === 1
               ? $t("pages.documents.mediator.title")
-              : isAttorneyIncludes ? $t("form.attorney.representative") : $t("pages.documents.party_" + (props.partyIndex + 1))
+              : isAttorneyIncludes
+                ? $t("form.attorney.representative", {
+                    index: props.partyIndex + 1,
+                  })
+                : $t("pages.documents.party_" + (props.partyIndex + 1))
           }}:
         </span>
         <b>{{ displayFullName }}</b>
