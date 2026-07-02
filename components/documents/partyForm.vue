@@ -630,390 +630,269 @@
                 </div>
               </div>
             </div>
+          </div>
+        </div>
 
-            <!--Имеется доверенное лицо-->
-            <div class="col-span-12">
-              <label class="custom-checkbox my-2">
-                <input
-                  type="checkbox"
-                  v-model="
-                    docData.agreement_parties[props.partyIndex].data.attorney
-                      .includes
-                  "
-                />
-                <span>{{ $t("form.attorney.is_available") }}</span>
-              </label>
-            </div>
-
-            <div
-              v-if="
+        <!--Имеется доверенное лицо-->
+        <div class="col-span-12">
+          <label class="custom-checkbox my-2">
+            <input
+              type="checkbox"
+              v-model="
                 docData.agreement_parties[props.partyIndex].data.attorney
-                  .includes === true
+                  .includes
               "
-              class="col-span-12"
-            >
+            />
+            <span>{{ $t("form.attorney.is_available") }}</span>
+          </label>
+        </div>
+
+        <div
+          v-if="
+            docData.agreement_parties[props.partyIndex].data.attorney
+              .includes === true
+          "
+          class="col-span-12"
+        >
+          <div class="custom-grid">
+            <stepName :num="4" :title="$t('form.attorney.title')" />
+
+            <div class="col-span-12">
               <div class="custom-grid">
-                <stepName :num="4" :title="$t('form.attorney.title')" />
+                <div class="col-span-12 lg:col-span-3">
+                  <div class="form-group-border active">
+                    <i class="pi pi-user"></i>
+                    <input
+                      v-model="
+                        docData.agreement_parties[props.partyIndex].data
+                          .attorney.person.iin
+                      "
+                      v-mask="'############'"
+                      @change="
+                        props.getUserById(
+                          props.partyIndex,
+                          $event.target.value,
+                          true,
+                        )
+                      "
+                      placeholder=" "
+                    />
+                    <label
+                      :class="{
+                        'label-error':
+                          errors[
+                            `agreement_parties.${props.partyIndex}.data.attorney.person.iin`
+                          ],
+                      }"
+                    >
+                      {{
+                        errors[
+                          `agreement_parties.${props.partyIndex}.data.attorney.person.iin`
+                        ]
+                          ? $t("form.iin.required")
+                          : $t("form.iin.title")
+                      }}
+                    </label>
+                  </div>
+                </div>
+
+                <div class="col-span-12 lg:col-span-3">
+                  <div class="form-group-border active">
+                    <i class="pi pi-user"></i>
+                    <input
+                      v-model="
+                        docData.agreement_parties[props.partyIndex].data
+                          .attorney.person.last_name
+                      "
+                      type="text"
+                      placeholder=" "
+                    />
+                    <label
+                      :class="{
+                        'label-error':
+                          errors[
+                            `agreement_parties.${props.partyIndex}.data.attorney.person.last_name`
+                          ],
+                      }"
+                    >
+                      {{
+                        errors[
+                          `agreement_parties.${props.partyIndex}.data.attorney.person.last_name`
+                        ]
+                          ? $t("form.last_name.required")
+                          : $t("form.last_name.title")
+                      }}
+                    </label>
+                  </div>
+                </div>
+
+                <div class="col-span-12 lg:col-span-3">
+                  <div class="form-group-border active">
+                    <i class="pi pi-user"></i>
+                    <input
+                      v-model="
+                        docData.agreement_parties[props.partyIndex].data
+                          .attorney.person.first_name
+                      "
+                      type="text"
+                      placeholder=" "
+                    />
+                    <label
+                      :class="{
+                        'label-error':
+                          errors[
+                            `agreement_parties.${props.partyIndex}.data.attorney.person.first_name`
+                          ],
+                      }"
+                    >
+                      {{
+                        errors[
+                          `agreement_parties.${props.partyIndex}.data.attorney.person.first_name`
+                        ]
+                          ? $t("form.name.required")
+                          : $t("form.name.title")
+                      }}
+                    </label>
+                  </div>
+                </div>
+
+                <div class="col-span-12 lg:col-span-3">
+                  <div class="form-group-border active">
+                    <i class="pi pi-user"></i>
+                    <input
+                      v-model="
+                        docData.agreement_parties[props.partyIndex].data
+                          .attorney.person.given_name
+                      "
+                      type="text"
+                      placeholder=" "
+                    />
+                    <label>
+                      {{ $t("form.given_name.title") }}
+                    </label>
+                  </div>
+                </div>
+
+                <div
+                  v-for="(
+                    level, attorneyLocationIndex
+                  ) in attorneyLocationSelections"
+                  :key="attorneyLocationIndex"
+                  class="col-span-12"
+                  :class="
+                    getSelectionColumnClass(attorneyLocationSelections.length)
+                  "
+                >
+                  <div class="form-group-border select active label-active">
+                    <i class="pi pi-map-marker"></i>
+
+                    <select
+                      v-model="level.selectedId"
+                      @change="onSelectAttorneyLocation(attorneyLocationIndex)"
+                    >
+                      <option disabled value="">
+                        {{ $t("form.select_a_point") }}
+                      </option>
+
+                      <option
+                        v-for="option in level.options"
+                        :key="option.location_id"
+                        :value="option.location_id"
+                      >
+                        {{ option.location_name }}
+                      </option>
+                    </select>
+
+                    <label
+                      :class="{
+                        'label-error':
+                          errors[
+                            `agreement_parties.${props.partyIndex}.data.attorney.person.data.location.id`
+                          ] &&
+                          attorneyLocationIndex ===
+                            attorneyLocationSelections.length - 1,
+                      }"
+                    >
+                      {{ $t("form.select_a_point") }}
+                    </label>
+                  </div>
+                </div>
 
                 <div class="col-span-12">
                   <div class="custom-grid">
-                    <div class="col-span-12 lg:col-span-3">
-                      <div class="form-group-border active">
-                        <i class="pi pi-user"></i>
-                        <input
-                          v-model="
-                            docData.agreement_parties[props.partyIndex].data
-                              .attorney.person.iin
-                          "
-                          v-mask="'############'"
-                          @change="
-                            props.getUserById(
-                              props.partyIndex,
-                              $event.target.value,
-                              true,
-                            )
-                          "
-                          placeholder=" "
-                        />
-                        <label
-                          :class="{
-                            'label-error':
-                              errors[
-                                `agreement_parties.${props.partyIndex}.data.attorney.person.iin`
-                              ],
-                          }"
-                        >
-                          {{
-                            errors[
-                              `agreement_parties.${props.partyIndex}.data.attorney.person.iin`
-                            ]
-                              ? $t("form.iin.required")
-                              : $t("form.iin.title")
-                          }}
-                        </label>
-                      </div>
-                    </div>
-
-                    <div class="col-span-12 lg:col-span-3">
-                      <div class="form-group-border active">
-                        <i class="pi pi-user"></i>
-                        <input
-                          v-model="
-                            docData.agreement_parties[props.partyIndex].data
-                              .attorney.person.last_name
-                          "
-                          type="text"
-                          placeholder=" "
-                        />
-                        <label
-                          :class="{
-                            'label-error':
-                              errors[
-                                `agreement_parties.${props.partyIndex}.data.attorney.person.last_name`
-                              ],
-                          }"
-                        >
-                          {{
-                            errors[
-                              `agreement_parties.${props.partyIndex}.data.attorney.person.last_name`
-                            ]
-                              ? $t("form.last_name.required")
-                              : $t("form.last_name.title")
-                          }}
-                        </label>
-                      </div>
-                    </div>
-
-                    <div class="col-span-12 lg:col-span-3">
-                      <div class="form-group-border active">
-                        <i class="pi pi-user"></i>
-                        <input
-                          v-model="
-                            docData.agreement_parties[props.partyIndex].data
-                              .attorney.person.first_name
-                          "
-                          type="text"
-                          placeholder=" "
-                        />
-                        <label
-                          :class="{
-                            'label-error':
-                              errors[
-                                `agreement_parties.${props.partyIndex}.data.attorney.person.first_name`
-                              ],
-                          }"
-                        >
-                          {{
-                            errors[
-                              `agreement_parties.${props.partyIndex}.data.attorney.person.first_name`
-                            ]
-                              ? $t("form.name.required")
-                              : $t("form.name.title")
-                          }}
-                        </label>
-                      </div>
-                    </div>
-
-                    <div class="col-span-12 lg:col-span-3">
-                      <div class="form-group-border active">
-                        <i class="pi pi-user"></i>
-                        <input
-                          v-model="
-                            docData.agreement_parties[props.partyIndex].data
-                              .attorney.person.given_name
-                          "
-                          type="text"
-                          placeholder=" "
-                        />
-                        <label>
-                          {{ $t("form.given_name.title") }}
-                        </label>
-                      </div>
-                    </div>
-
                     <div
-                      v-for="(level, attorneyLocationIndex) in attorneyLocationSelections"
-                      :key="attorneyLocationIndex"
-                      class="col-span-12"
-                      :class="
-                        getSelectionColumnClass(
-                          attorneyLocationSelections.length,
-                        )
+                      v-if="
+                        docData.agreement_parties[props.partyIndex].data
+                          .attorney.person.data.location.is_district === true
                       "
+                      class="col-span-12 lg:col-span-3"
                     >
-                      <div class="form-group-border select active label-active">
+                      <div class="form-group-border active">
                         <i class="pi pi-map-marker"></i>
-
-                        <select
-                          v-model="level.selectedId"
-                          @change="onSelectAttorneyLocation(attorneyLocationIndex)"
-                        >
-                          <option disabled value="">
-                            {{ $t("form.select_a_point") }}
-                          </option>
-
-                          <option
-                            v-for="option in level.options"
-                            :key="option.location_id"
-                            :value="option.location_id"
-                          >
-                            {{ option.location_name }}
-                          </option>
-                        </select>
-
+                        <input
+                          v-model="
+                            docData.agreement_parties[props.partyIndex].data
+                              .attorney.person.data.location.village
+                          "
+                          placeholder=" "
+                        />
                         <label
                           :class="{
                             'label-error':
                               errors[
-                                `agreement_parties.${props.partyIndex}.data.attorney.person.data.location.id`
-                              ] &&
-                              attorneyLocationIndex === attorneyLocationSelections.length - 1,
-                          }"
-                        >
-                          {{ $t("form.select_a_point") }}
-                        </label>
-                      </div>
-                    </div>
-
-                    <div class="col-span-12">
-                      <div class="custom-grid">
-                        <div
-                          v-if="
-                            docData.agreement_parties[props.partyIndex].data
-                              .attorney.person.data.location.is_district ===
-                            true
-                          "
-                          class="col-span-12 lg:col-span-3"
-                        >
-                          <div class="form-group-border active">
-                            <i class="pi pi-map-marker"></i>
-                            <input
-                              v-model="
-                                docData.agreement_parties[props.partyIndex].data
-                                  .attorney.person.data.location.village
-                              "
-                              placeholder=" "
-                            />
-                            <label
-                              :class="{
-                                'label-error':
-                                  errors[
-                                    `agreement_parties.${props.partyIndex}.data.attorney.person.data.location.village`
-                                  ],
-                              }"
-                            >
-                              {{
-                                errors[
-                                  `agreement_parties.${props.partyIndex}.data.attorney.person.data.location.village`
-                                ]
-                                  ? $t("form.village.required")
-                                  : $t("form.village.title")
-                              }}
-                            </label>
-                          </div>
-                        </div>
-
-                        <div class="col-span-12 lg:col-span-3">
-                          <div class="form-group-border active">
-                            <i class="bi bi-signpost-split"></i>
-                            <input
-                              v-model="
-                                docData.agreement_parties[props.partyIndex].data
-                                  .attorney.person.data.location.street
-                              "
-                              placeholder=" "
-                            />
-                            <label
-                              :class="{
-                                'label-error':
-                                  errors[
-                                    `agreement_parties.${props.partyIndex}.data.attorney.person.data.location.street`
-                                  ],
-                              }"
-                            >
-                              {{
-                                errors[
-                                  `agreement_parties.${props.partyIndex}.data.attorney.person.data.location.street`
-                                ]
-                                  ? $t("form.street.required")
-                                  : $t("form.street.title")
-                              }}
-                            </label>
-                          </div>
-                        </div>
-
-                        <div class="col-span-12 lg:col-span-3">
-                          <div class="form-group-border active">
-                            <i class="pi pi-home"></i>
-                            <input
-                              v-model="
-                                docData.agreement_parties[props.partyIndex].data
-                                  .attorney.person.data.location.house
-                              "
-                              type="text"
-                              inputmode="numeric"
-                              pattern="^\d+(\/\d+)?$"
-                              placeholder=" "
-                            />
-                            <label
-                              :class="{
-                                'label-error':
-                                  errors[
-                                    `agreement_parties.${props.partyIndex}.data.attorney.person.data.location.house`
-                                  ],
-                              }"
-                            >
-                              {{
-                                errors[
-                                  `agreement_parties.${props.partyIndex}.data.attorney.person.data.location.house`
-                                ]
-                                  ? $t("form.house.required")
-                                  : $t("form.house.title")
-                              }}
-                            </label>
-                          </div>
-                        </div>
-
-                        <div class="col-span-12 lg:col-span-3">
-                          <div class="form-group-border active">
-                            <i class="bi bi-door-open"></i>
-                            <input
-                              v-model="
-                                docData.agreement_parties[props.partyIndex].data
-                                  .attorney.person.data.location.flat
-                              "
-                              type="number"
-                              placeholder=" "
-                            />
-                            <label>
-                              {{ $t("form.flat") }}
-                            </label>
-                          </div>
-                        </div>
-
-                        <div class="col-span-12 lg:col-span-3">
-                          <div class="form-group-border active">
-                            <i class="pi pi-mobile"></i>
-                            <input
-                              autoComplete="register-phone"
-                              v-model="
-                                docData.agreement_parties[props.partyIndex].data
-                                  .attorney.person.data.phone
-                              "
-                              v-mask="'+7 (###) ###-####'"
-                              placeholder="+7 (___) ___-____"
-                            />
-                            <label
-                              :class="{
-                                'label-error':
-                                  errors[
-                                    `agreement_parties.${props.partyIndex}.data.attorney.person.data.phone`
-                                  ],
-                              }"
-                            >
-                              {{
-                                errors[
-                                  `agreement_parties.${props.partyIndex}.data.attorney.person.data.phone`
-                                ]
-                                  ? $t("form.phone.required")
-                                  : $t("form.phone.title")
-                              }}
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div
-                      v-if="attorneyTypes.length > 0"
-                      class="col-span-12 lg:col-span-4"
-                    >
-                      <div class="form-group-border select active label-active">
-                        <i class="pi pi-id-card"></i>
-                        <select
-                          v-model.number="
-                            docData.agreement_parties[props.partyIndex].data
-                              .attorney.type_id
-                          "
-                        >
-                          <option disabled :value="null">
-                            {{ $t("form.attorney.type.required") }}
-                          </option>
-                          <option
-                            v-for="option in attorneyTypes"
-                            :key="option.attorney_type_id"
-                            :value="option.attorney_type_id"
-                          >
-                            {{ option.attorney_type_name }}
-                          </option>
-                        </select>
-                        <label
-                          :class="{
-                            'label-error':
-                              errors[
-                                `agreement_parties.${props.partyIndex}.data.attorney.type_id`
+                                `agreement_parties.${props.partyIndex}.data.attorney.person.data.location.village`
                               ],
                           }"
                         >
                           {{
                             errors[
-                              `agreement_parties.${props.partyIndex}.data.attorney.type_id`
+                              `agreement_parties.${props.partyIndex}.data.attorney.person.data.location.village`
                             ]
-                              ? $t("form.attorney.type.required")
-                              : $t("form.attorney.type.title")
+                              ? $t("form.village.required")
+                              : $t("form.village.title")
                           }}
                         </label>
                       </div>
                     </div>
 
-                    <div class="col-span-12 lg:col-span-4">
+                    <div class="col-span-12 lg:col-span-3">
                       <div class="form-group-border active">
-                        <i class="pi pi-file"></i>
+                        <i class="bi bi-signpost-split"></i>
                         <input
                           v-model="
                             docData.agreement_parties[props.partyIndex].data
-                              .attorney.num
+                              .attorney.person.data.location.street
                           "
+                          placeholder=" "
+                        />
+                        <label
+                          :class="{
+                            'label-error':
+                              errors[
+                                `agreement_parties.${props.partyIndex}.data.attorney.person.data.location.street`
+                              ],
+                          }"
+                        >
+                          {{
+                            errors[
+                              `agreement_parties.${props.partyIndex}.data.attorney.person.data.location.street`
+                            ]
+                              ? $t("form.street.required")
+                              : $t("form.street.title")
+                          }}
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="col-span-12 lg:col-span-3">
+                      <div class="form-group-border active">
+                        <i class="pi pi-home"></i>
+                        <input
+                          v-model="
+                            docData.agreement_parties[props.partyIndex].data
+                              .attorney.person.data.location.house
+                          "
+                          type="text"
                           inputmode="numeric"
                           pattern="^\d+(\/\d+)?$"
                           placeholder=" "
@@ -1022,49 +901,170 @@
                           :class="{
                             'label-error':
                               errors[
-                                `agreement_parties.${props.partyIndex}.data.attorney.num`
+                                `agreement_parties.${props.partyIndex}.data.attorney.person.data.location.house`
                               ],
                           }"
                         >
                           {{
                             errors[
-                              `agreement_parties.${props.partyIndex}.data.attorney.num`
+                              `agreement_parties.${props.partyIndex}.data.attorney.person.data.location.house`
                             ]
-                              ? $t("form.attorney.num.required")
-                              : $t("form.attorney.num.title")
+                              ? $t("form.house.required")
+                              : $t("form.house.title")
                           }}
                         </label>
                       </div>
                     </div>
-                    <div class="col-span-12 lg:col-span-4">
+
+                    <div class="col-span-12 lg:col-span-3">
                       <div class="form-group-border active">
-                        <i class="pi pi-calendar"></i>
+                        <i class="bi bi-door-open"></i>
                         <input
                           v-model="
                             docData.agreement_parties[props.partyIndex].data
-                              .attorney.date
+                              .attorney.person.data.location.flat
                           "
-                          type="date"
+                          type="number"
                           placeholder=" "
+                        />
+                        <label>
+                          {{ $t("form.flat") }}
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="col-span-12 lg:col-span-3">
+                      <div class="form-group-border active">
+                        <i class="pi pi-mobile"></i>
+                        <input
+                          autoComplete="register-phone"
+                          v-model="
+                            docData.agreement_parties[props.partyIndex].data
+                              .attorney.person.data.phone
+                          "
+                          v-mask="'+7 (###) ###-####'"
+                          placeholder="+7 (___) ___-____"
                         />
                         <label
                           :class="{
                             'label-error':
                               errors[
-                                `agreement_parties.${props.partyIndex}.data.attorney.date`
+                                `agreement_parties.${props.partyIndex}.data.attorney.person.data.phone`
                               ],
                           }"
                         >
                           {{
                             errors[
-                              `agreement_parties.${props.partyIndex}.data.attorney.date`
+                              `agreement_parties.${props.partyIndex}.data.attorney.person.data.phone`
                             ]
-                              ? $t("form.attorney.date.required")
-                              : $t("form.attorney.date.title")
+                              ? $t("form.phone.required")
+                              : $t("form.phone.title")
                           }}
                         </label>
                       </div>
                     </div>
+                  </div>
+                </div>
+
+                <div
+                  v-if="attorneyTypes.length > 0"
+                  class="col-span-12 lg:col-span-4"
+                >
+                  <div class="form-group-border select active label-active">
+                    <i class="pi pi-id-card"></i>
+                    <select
+                      v-model.number="
+                        docData.agreement_parties[props.partyIndex].data
+                          .attorney.type_id
+                      "
+                    >
+                      <option disabled :value="null">
+                        {{ $t("form.attorney.type.required") }}
+                      </option>
+                      <option
+                        v-for="option in attorneyTypes"
+                        :key="option.attorney_type_id"
+                        :value="option.attorney_type_id"
+                      >
+                        {{ option.attorney_type_name }}
+                      </option>
+                    </select>
+                    <label
+                      :class="{
+                        'label-error':
+                          errors[
+                            `agreement_parties.${props.partyIndex}.data.attorney.type_id`
+                          ],
+                      }"
+                    >
+                      {{
+                        errors[
+                          `agreement_parties.${props.partyIndex}.data.attorney.type_id`
+                        ]
+                          ? $t("form.attorney.type.required")
+                          : $t("form.attorney.type.title")
+                      }}
+                    </label>
+                  </div>
+                </div>
+
+                <div class="col-span-12 lg:col-span-4">
+                  <div class="form-group-border active">
+                    <i class="pi pi-file"></i>
+                    <input
+                      v-model="
+                        docData.agreement_parties[props.partyIndex].data
+                          .attorney.num
+                      "
+                      inputmode="numeric"
+                      pattern="^\d+(\/\d+)?$"
+                      placeholder=" "
+                    />
+                    <label
+                      :class="{
+                        'label-error':
+                          errors[
+                            `agreement_parties.${props.partyIndex}.data.attorney.num`
+                          ],
+                      }"
+                    >
+                      {{
+                        errors[
+                          `agreement_parties.${props.partyIndex}.data.attorney.num`
+                        ]
+                          ? $t("form.attorney.num.required")
+                          : $t("form.attorney.num.title")
+                      }}
+                    </label>
+                  </div>
+                </div>
+                <div class="col-span-12 lg:col-span-4">
+                  <div class="form-group-border active">
+                    <i class="pi pi-calendar"></i>
+                    <input
+                      v-model="
+                        docData.agreement_parties[props.partyIndex].data
+                          .attorney.date
+                      "
+                      type="date"
+                      placeholder=" "
+                    />
+                    <label
+                      :class="{
+                        'label-error':
+                          errors[
+                            `agreement_parties.${props.partyIndex}.data.attorney.date`
+                          ],
+                      }"
+                    >
+                      {{
+                        errors[
+                          `agreement_parties.${props.partyIndex}.data.attorney.date`
+                        ]
+                          ? $t("form.attorney.date.required")
+                          : $t("form.attorney.date.title")
+                      }}
+                    </label>
                   </div>
                 </div>
               </div>
