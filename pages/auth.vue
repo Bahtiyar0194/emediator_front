@@ -181,68 +181,14 @@ async function getQR() {
 }
 
 async function sendQR(dataURL) {
-  processText.value = "post запрос к " + dataURL;
-
   await $axiosPlugin
-    .post(dataURL, {
-      signMethod: "CMS_SIGN_ONLY",
-      documentsToSign: [
-        {
-          id: 1,
-          nameEn: "Authentication on portal Emediator.kz",
-          nameRu: "Вход в личный кабинет на портале Emediator.kz",
-          nameKz: "Emediator.kz порталындағы жеке кабинетке өту",
-          document: {
-            file: {
-              data: nonce.value,
-              mime: "@file/pdf",
-            },
-          },
-        },
-      ],
+    .post("/auth/send_qr", {
+      url: dataURL,
+      data: nonce.value,
     })
-    .then((r) => {
-      if (r.data.signURL) {
-        signQR(r.data.signURL);
-      } else {
-        signError.value = {
-          message: t("errors.server_error"),
-          description: JSON.stringify(r.data),
-          status: err?.response.status,
-        };
-        pending.value = false;
-        return;
-      }
-    })
-    .catch((err) => {
-      signError.value = {
-        message: t("errors.server_error"),
-        description: err?.response.data.message,
-        status: err?.response.status,
-      };
-      pending.value = false;
-      return;
-    });
-}
-
-async function signQR(signURL) {
-  processText.value = "get запрос к " + signURL;
-  pending.value = true;
-  await $axiosPlugin
-    .get(signURL)
-    .then((r) => {
-      const signData = r.data.documentsToSign[0].document.file.data;
-
-      if (signData) {
-        auth(nonce.value, signData);
-      } else {
-        signError.value = {
-          message: t("errors.server_error"),
-          description: JSON.stringify(r.data),
-          status: err?.response.status,
-        };
-        pending.value = false;
-        return;
+    .then((res) => {
+      if (res.data.data) {
+        auth(nonce.value, res.data.data);
       }
     })
     .catch((err) => {
