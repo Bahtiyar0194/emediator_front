@@ -2,7 +2,8 @@
   <template v-if="signError">
     <p class="font-medium text-danger">{{ signError.message }}</p>
     <p>{{ signError.description }}</p>
-
+    <p v-if="signError.code">{{ signError.code }}</p>
+    
     <template
       v-if="
         props.document &&

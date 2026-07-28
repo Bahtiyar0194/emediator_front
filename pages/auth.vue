@@ -173,6 +173,7 @@ async function getQR() {
       signError.value = {
         message: t("errors.server_error"),
         description: err?.response.data.message,
+        code: err?.response.data.code,
         status: err?.response.status,
       };
       pending.value = false;
@@ -185,16 +186,33 @@ async function sendQR(dataURL) {
     .post("/auth/send_qr", {
       url: dataURL,
       data: nonce.value,
+      lang: localeProperties.value.code,
     })
     .then((res) => {
-      if (res.data.data) {
-        auth(nonce.value, res.data.data);
+      // if (res.data.data) {
+      //   auth(nonce.value, res.data.data);
+      // }
+
+      if(res.data.token){
+        const sanctumToken = useCookie("sanctum.token.cookie");
+
+        sanctumToken.value = res.data.token;
+
+        if (sanctumToken.value) {
+          $axiosPlugin.defaults.headers.common["Authorization"] =
+            "Bearer " + sanctumToken.value;
+
+          setTimeout(() => {
+            window.location.href = '/dashboard';
+          }, 300);
+        }
       }
     })
     .catch((err) => {
       signError.value = {
         message: t("errors.server_error"),
         description: err?.response.data.message,
+        code: err?.response.data.code,
         status: err?.response.status,
       };
       pending.value = false;
