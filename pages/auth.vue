@@ -180,19 +180,38 @@ async function getQR() {
 }
 
 async function sendQR(dataURL) {
-
-  
   await $axiosPlugin
     .post("/auth/send_qr", {
       url: dataURL,
       data: nonce.value,
-      lang: localeProperties.value.code,
     })
     .then((res) => {
-      // if (res.data.data) {
-      //   auth(nonce.value, res.data.data);
-      // }
+      if (res.data.url) {
+        signQR(res.data.url);
+      }
+    })
+    .catch((err) => {
+      signError.value = {
+        message: t("errors.server_error"),
+        description: err?.response.data.message,
+        code: err?.response.data.code,
+        status: err?.response.status,
+      };
+      pending.value = false;
+      return;
+    });
+}
 
+async function signQR(signURL) {
+  pending.value = true;
+
+  await $axiosPlugin
+    .post("/auth/sign_qr", {
+      url: signURL,
+      nonce: nonce.value,
+      lang: localeProperties.value.code
+    })
+    .then((res) => {
       if(res.data.token){
         const sanctumToken = useCookie("sanctum.token.cookie");
 
