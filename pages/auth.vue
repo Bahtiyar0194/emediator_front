@@ -206,13 +206,18 @@ async function signQR(signURL) {
   pending.value = true;
 
   await $axiosPlugin
-    .post("/auth/sign_qr", {
-      url: signURL,
-      nonce: nonce.value,
-      lang: localeProperties.value.code
-    })
+    .post(
+      "/auth/sign_qr",
+      {
+        url: signURL,
+        nonce: nonce.value,
+        lang: localeProperties.value.code,
+      },
+      {
+        timeout: 20000,
+      },
+    )
     .then((res) => {
-
       if (res.data.message) {
         signError.value = {
           message: t("errors.server_error"),
@@ -222,7 +227,7 @@ async function signQR(signURL) {
         return;
       }
 
-      if(res.data.token){
+      if (res.data.token) {
         const sanctumToken = useCookie("sanctum.token.cookie");
 
         sanctumToken.value = res.data.token;
@@ -232,7 +237,7 @@ async function signQR(signURL) {
             "Bearer " + sanctumToken.value;
 
           setTimeout(() => {
-            window.location.href = '/dashboard';
+            window.location.href = "/dashboard";
           }, 300);
         }
       }
