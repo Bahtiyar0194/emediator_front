@@ -11,6 +11,7 @@
     <div v-for="(op, index) in ops" :key="index" class="card p-4 mb-2">
       <p>{{ op.title }}</p>
       <p>{{ op.datetime }}</p>
+      <p v-if="op.nonce">{{ op.nonce }}</p>
     </div>
 
     <signButtons
@@ -196,6 +197,7 @@ async function sendQR(dataURL) {
   ops.value.push({
     title: "send_qr",
     datetime: new Date(),
+    nonce: nonce.value,
   });
 
   await $axiosPlugin
