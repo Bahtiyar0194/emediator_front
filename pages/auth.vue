@@ -212,6 +212,16 @@ async function signQR(signURL) {
       lang: localeProperties.value.code
     })
     .then((res) => {
+
+      if (res.data.message) {
+        signError.value = {
+          message: t("errors.server_error"),
+          description: res.data.message,
+          status: res.status,
+        };
+        return;
+      }
+
       if(res.data.token){
         const sanctumToken = useCookie("sanctum.token.cookie");
 
