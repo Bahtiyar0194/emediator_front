@@ -7,6 +7,12 @@
     </div>
   </div>
   <div class="card-body">
+
+    <div v-for="(op, index) in ops" :key="index" class="card p-4 mb-2">
+      <p>{{ op.title }}</p>
+      <p>{{ op.datetime }}</p>
+    </div>
+
     <signButtons
       :mode="'auth'"
       :signError="signError"
@@ -35,7 +41,7 @@ const pending = ref(true);
 const signError = ref(null);
 const ncaLayer = ref(new NCALayerClient());
 
-const processText = ref(null);
+const ops = ref([]);
 
 useHead({
   title: t("pages.auth.title"),
@@ -151,6 +157,11 @@ async function signWithNCALayer() {
 }
 
 async function getQR() {
+  ops.value.push({
+    title: "get_qr",
+    datetime: new Date(),
+  });
+
   pending.value = true;
   await $axiosPlugin
     .post("/auth/get_qr")
@@ -182,6 +193,11 @@ async function getQR() {
 }
 
 async function sendQR(dataURL) {
+  ops.value.push({
+    title: "send_qr",
+    datetime: new Date(),
+  });
+
   await $axiosPlugin
     .post("/auth/send_qr", {
       url: dataURL,
@@ -193,7 +209,7 @@ async function sendQR(dataURL) {
       //   auth(nonce.value, res.data.data);
       // }
 
-      if(res.data.token){
+      if (res.data.token) {
         const sanctumToken = useCookie("sanctum.token.cookie");
 
         sanctumToken.value = res.data.token;
@@ -203,7 +219,7 @@ async function sendQR(dataURL) {
             "Bearer " + sanctumToken.value;
 
           setTimeout(() => {
-            window.location.href = '/dashboard';
+            window.location.href = "/dashboard";
           }, 300);
         }
       }
