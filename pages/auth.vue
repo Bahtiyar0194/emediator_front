@@ -213,9 +213,6 @@ async function signQR(signURL) {
         nonce: nonce.value,
         lang: localeProperties.value.code,
       },
-      {
-        timeout: 20000,
-      },
     )
     .then((res) => {
       if (res.data.message) {
