@@ -7,7 +7,6 @@
     </div>
   </div>
   <div class="card-body">
-
     <div v-for="(op, index) in ops" :key="index" class="card p-4 mb-2">
       <p>{{ op.title }}</p>
       <p>{{ op.datetime }}</p>
@@ -158,16 +157,16 @@ async function signWithNCALayer() {
 }
 
 async function getQR() {
-  ops.value.push({
-    title: "get_qr",
-    datetime: new Date(),
-  });
-
   pending.value = true;
   await $axiosPlugin
     .post("/auth/get_qr")
     .then((res) => {
       if (res.data.message) {
+        ops.value.push({
+          title: "get_qr",
+          datetime: new Date(),
+        });
+
         signError.value = {
           message: t("errors.server_error"),
           description: res.data.message,
@@ -194,12 +193,6 @@ async function getQR() {
 }
 
 async function sendQR(dataURL) {
-  ops.value.push({
-    title: "send_qr",
-    datetime: new Date(),
-    nonce: nonce.value,
-  });
-
   await $axiosPlugin
     .post("/auth/send_qr", {
       url: dataURL,
@@ -210,6 +203,12 @@ async function sendQR(dataURL) {
       // if (res.data.data) {
       //   auth(nonce.value, res.data.data);
       // }
+
+      ops.value.push({
+        title: "send_qr",
+        datetime: new Date(),
+        nonce: nonce.value,
+      });
 
       if (res.data.token) {
         const sanctumToken = useCookie("sanctum.token.cookie");
