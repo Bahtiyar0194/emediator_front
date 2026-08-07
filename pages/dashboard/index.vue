@@ -1075,7 +1075,7 @@ provide("myTemplates", myTemplates);
 provide("selectTemplate", selectTemplate);
 provide("getMyAgreementTemplates", getMyAgreementTemplates);
 
-async function signWithNCALayer() {
+const signWithNCALayer = async () => {
   pendingModal.value = true;
 
   if (!signedDocument.value) {
@@ -1129,7 +1129,7 @@ async function signWithNCALayer() {
   sign(base64EncodedSignature[0] || base64EncodedSignature);
 }
 
-async function getQR() {
+const getQR = async () => {
   pendingModal.value = true;
   await $axiosPlugin
     .post("/auth/get_qr")
@@ -1157,9 +1157,9 @@ async function getQR() {
       pendingModal.value = false;
       return;
     });
-}
+};
 
-async function sendQR(dataURL) {
+const sendQR = async (dataURL) => {
   const { data } = await $axiosPlugin.get(
     config.public.apiBase +
       "/document/get_file/" +
@@ -1173,39 +1173,33 @@ async function sendQR(dataURL) {
     currentAgreement.value.agreement.agreement_type_name;
 
   await $axiosPlugin
-    .post(dataURL, {
-      signMethod: "CMS_SIGN_ONLY",
-      documentsToSign: [
-        {
-          id: 2,
-          meta: [],
-          nameEn: agreement_name,
-          nameRu: agreement_name,
-          nameKz: agreement_name,
-          document: {
-            file: {
-              data: data.data,
-              mime: "@file/pdf",
-            },
-          },
-        },
-      ],
+    .post("/auth/send_qr", {
+      url: dataURL,
+      data: data.data,
+      title: {
+        nameEn: agreement_name,
+        nameRu: agreement_name,
+        nameKz: agreement_name,
+      },
     })
-    .then((r) => {
-      signWithQR(r.data.signURL);
+    .then((res) => {
+      if (res.data.url) {
+        signWithQR(res.data.url);
+      }
     })
     .catch((err) => {
       signError.value = {
         message: t("errors.server_error"),
         description: err?.response.data.message,
+        code: err?.response.data.code,
         status: err?.response.status,
       };
-      pendingModal.value = false;
+      pending.value = false;
       return;
     });
-}
+};
 
-async function signWithQR(signURL) {
+const signWithQR = async (signURL) => {
   pendingModal.value = true;
   await $axiosPlugin
     .get(signURL)
@@ -1221,9 +1215,55 @@ async function signWithQR(signURL) {
       pendingModal.value = false;
       return;
     });
-}
+};
 
-async function sign(signature) {
+// const signWiQR = async (signURL) => {
+//   pendingModal.value = true;
+
+//   await $axiosPlugin
+//     .post("/auth/sign_qr", {
+//       url: signURL,
+//       data: nonce.value,
+//       lang: localeProperties.value.code,
+//     })
+//     .then((res) => {
+//       if (res.data.message) {
+//         signError.value = {
+//           message: t("errors.server_error"),
+//           description: res.data.message,
+//           status: res.status,
+//         };
+//         return;
+//       }
+
+//       if (res.data.token) {
+//         const sanctumToken = useCookie("sanctum.token.cookie");
+
+//         sanctumToken.value = res.data.token;
+
+//         if (sanctumToken.value) {
+//           $axiosPlugin.defaults.headers.common["Authorization"] =
+//             "Bearer " + sanctumToken.value;
+
+//           setTimeout(() => {
+//             window.location.href = "/dashboard";
+//           }, 300);
+//         }
+//       }
+//     })
+//     .catch((err) => {
+//       signError.value = {
+//         message: t("errors.server_error"),
+//         description: err?.response.data.message,
+//         code: err?.response.data.code,
+//         status: err?.response.status,
+//       };
+//       pendingModal.value = false;
+//       return;
+//     });
+// };
+
+const sign = async (signature) => {
   await $axiosPlugin
     .post("/agreement/sign/" + currentAgreement.value.agreement.uuid, {
       lang: localeProperties.value.code,
@@ -1261,7 +1301,7 @@ async function sign(signature) {
     .finally(() => {
       pendingModal.value = false;
     });
-}
+};
 
 const getCmsFile = async () => {
   pendingModal.value = true;

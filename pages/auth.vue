@@ -24,6 +24,10 @@ import { NCALayerClient } from "ncalayer-js-client";
 import loader from "../components/ui/loader.vue";
 import selectLocale from "../components/ui/selectLocale.vue";
 import signButtons from "../components/sign/signButtons.vue";
+import { useRoute } from "nuxt/app";
+import { onMounted } from "vue";
+
+const route = useRoute();
 
 const { t, localeProperties } = useI18n();
 const { $axiosPlugin } = useNuxtApp();
@@ -45,11 +49,7 @@ definePageMeta({
   middleware: ["sanctum:guest"],
 });
 
-onMounted(() => {
-  getNonce();
-});
-
-async function getNonce() {
+const getNonce = async () => {
   pending.value = true;
 
   await $axiosPlugin
@@ -75,9 +75,9 @@ async function getNonce() {
     .finally(() => {
       pending.value = false;
     });
-}
+};
 
-async function auth(nonce, signature) {
+const auth = async (nonce, signature) => {
   try {
     await login({
       lang: localeProperties.value.code,
@@ -104,9 +104,9 @@ async function auth(nonce, signature) {
       pending.value = false;
     }
   }
-}
+};
 
-async function signWithNCALayer() {
+const signWithNCALayer = async () => {
   pending.value = true;
   try {
     await ncaLayer.value.connect();
@@ -146,12 +146,14 @@ async function signWithNCALayer() {
   }
 
   auth(nonce.value, base64EncodedSignature[0] || base64EncodedSignature);
-}
+};
 
-async function getQR() {
+const getQR = async () => {
   pending.value = true;
   await $axiosPlugin
-    .post("/auth/get_qr")
+    .post("/auth/get_qr", {
+      data: nonce.value,
+    })
     .then((res) => {
       if (res.data.message) {
         signError.value = {
@@ -177,13 +179,18 @@ async function getQR() {
       pending.value = false;
       return;
     });
-}
+};
 
-async function sendQR(dataURL) {
+const sendQR = async (dataURL) => {
   await $axiosPlugin
     .post("/auth/send_qr", {
       url: dataURL,
       data: nonce.value,
+      title: {
+        nameEn: "Authentication on portal Emediator.kz",
+        nameRu: "Вход в личный кабинет на портале Emediator.kz",
+        nameKz: "Emediator.kz порталындағы жеке кабинетке өту",
+      },
     })
     .then((res) => {
       if (res.data.url) {
@@ -200,20 +207,17 @@ async function sendQR(dataURL) {
       pending.value = false;
       return;
     });
-}
+};
 
-async function signQR(signURL) {
+const signQR = async (signURL) => {
   pending.value = true;
 
   await $axiosPlugin
-    .post(
-      "/auth/sign_qr",
-      {
-        url: signURL,
-        nonce: nonce.value,
-        lang: localeProperties.value.code,
-      },
-    )
+    .post("/auth/sign_qr", {
+      url: signURL,
+      data: nonce.value,
+      lang: localeProperties.value.code,
+    })
     .then((res) => {
       if (res.data.message) {
         signError.value = {
@@ -249,14 +253,67 @@ async function signQR(signURL) {
       pending.value = false;
       return;
     });
-}
+};
 
 const clearQR = () => {
   authQR.value = null;
   getNonce();
 };
 
-function reloadPage() {
-  window.location.reload();
-}
+const reloadPage = () => {
+  window.location.href = "/auth";
+};
+
+const authByToken = async (token) => {
+  pending.value = true;
+
+  await $axiosPlugin
+    .post("/auth/by_token", {
+      token: token,
+      lang: localeProperties.value.code,
+    })
+    .then((res) => {
+      if (res.data.message) {
+        signError.value = {
+          message: t("errors.server_error"),
+          description: res.data.message,
+          status: res.status,
+        };
+        return;
+      }
+
+      if (res.data.token) {
+        const sanctumToken = useCookie("sanctum.token.cookie");
+
+        sanctumToken.value = res.data.token;
+
+        if (sanctumToken.value) {
+          $axiosPlugin.defaults.headers.common["Authorization"] =
+            "Bearer " + sanctumToken.value;
+
+          setTimeout(() => {
+            window.location.href = "/dashboard";
+          }, 300);
+        }
+      }
+    })
+    .catch((err) => {
+      signError.value = {
+        message: t("errors.server_error"),
+        description: err?.response.data.message,
+        code: err?.response.data.code,
+        status: err?.response.status,
+      };
+      pending.value = false;
+      return;
+    });
+};
+
+onMounted(() => {
+  if (route.query.t) {
+    authByToken(route.query.t);
+  } else {
+    getNonce();
+  }
+});
 </script>
