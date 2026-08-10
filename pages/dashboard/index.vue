@@ -1127,12 +1127,15 @@ const signWithNCALayer = async () => {
   }
 
   sign(base64EncodedSignature[0] || base64EncodedSignature);
-}
+};
 
 const getQR = async () => {
   pendingModal.value = true;
   await $axiosPlugin
-    .post("/auth/get_qr")
+    .post("/auth/get_qr", {
+      data: currentAgreement.value[docMode.value].uuid,
+      mode: 'sign'
+    })
     .then((res) => {
       if (res.data.message) {
         signError.value = {
@@ -1172,19 +1175,66 @@ const sendQR = async (dataURL) => {
     currentAgreement.value.agreement.template_name ||
     currentAgreement.value.agreement.agreement_type_name;
 
+  if (data) {
+    await $axiosPlugin
+      .post("/auth/send_qr", {
+        url: dataURL,
+        data: data.data,
+        title: {
+          nameEn: agreement_name,
+          nameRu: agreement_name,
+          nameKz: agreement_name,
+        },
+      })
+      .then((res) => {
+        if (res.data.url) {
+          signWithQR(res.data.url);
+        }
+      })
+      .catch((err) => {
+        signError.value = {
+          message: t("errors.server_error"),
+          description: err?.response.data.message,
+          code: err?.response.data.code,
+          status: err?.response.status,
+        };
+        pending.value = false;
+        return;
+      });
+  } else {
+    signError.value = {
+      message: t("errors.server_error"),
+      description: "Document is not available",
+      code: 5661,
+      status: 400,
+    };
+    pending.value = false;
+    return;
+  }
+};
+
+const signWithQR = async (signURL) => {
+  pendingModal.value = true;
+
   await $axiosPlugin
-    .post("/auth/send_qr", {
-      url: dataURL,
-      data: data.data,
-      title: {
-        nameEn: agreement_name,
-        nameRu: agreement_name,
-        nameKz: agreement_name,
-      },
+    .post("/auth/sign_qr", {
+      url: signURL,
+      data: currentAgreement.value[docMode.value].uuid,
+      lang: localeProperties.value.code,
+      mode: "sign",
     })
     .then((res) => {
-      if (res.data.url) {
-        signWithQR(res.data.url);
+      if (res.data.message) {
+        signError.value = {
+          message: t("errors.server_error"),
+          description: res.data.message,
+          status: res.status,
+        };
+        return;
+      }
+
+      if (res.data.token) {
+        sign(res.data.token);
       }
     })
     .catch((err) => {
@@ -1194,74 +1244,10 @@ const sendQR = async (dataURL) => {
         code: err?.response.data.code,
         status: err?.response.status,
       };
-      pending.value = false;
-      return;
-    });
-};
-
-const signWithQR = async (signURL) => {
-  pendingModal.value = true;
-  await $axiosPlugin
-    .get(signURL)
-    .then((r) => {
-      sign(r.data.documentsToSign[0].document.file.data);
-    })
-    .catch((err) => {
-      signError.value = {
-        message: t("errors.server_error"),
-        description: err?.response.data.message,
-        status: err?.response.status,
-      };
       pendingModal.value = false;
       return;
     });
 };
-
-// const signWiQR = async (signURL) => {
-//   pendingModal.value = true;
-
-//   await $axiosPlugin
-//     .post("/auth/sign_qr", {
-//       url: signURL,
-//       data: nonce.value,
-//       lang: localeProperties.value.code,
-//     })
-//     .then((res) => {
-//       if (res.data.message) {
-//         signError.value = {
-//           message: t("errors.server_error"),
-//           description: res.data.message,
-//           status: res.status,
-//         };
-//         return;
-//       }
-
-//       if (res.data.token) {
-//         const sanctumToken = useCookie("sanctum.token.cookie");
-
-//         sanctumToken.value = res.data.token;
-
-//         if (sanctumToken.value) {
-//           $axiosPlugin.defaults.headers.common["Authorization"] =
-//             "Bearer " + sanctumToken.value;
-
-//           setTimeout(() => {
-//             window.location.href = "/dashboard";
-//           }, 300);
-//         }
-//       }
-//     })
-//     .catch((err) => {
-//       signError.value = {
-//         message: t("errors.server_error"),
-//         description: err?.response.data.message,
-//         code: err?.response.data.code,
-//         status: err?.response.status,
-//       };
-//       pendingModal.value = false;
-//       return;
-//     });
-// };
 
 const sign = async (signature) => {
   await $axiosPlugin

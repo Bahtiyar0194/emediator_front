@@ -153,6 +153,7 @@ const getQR = async () => {
   await $axiosPlugin
     .post("/auth/get_qr", {
       data: nonce.value,
+      mode: "auth",
     })
     .then((res) => {
       if (res.data.message) {
@@ -217,6 +218,7 @@ const signQR = async (signURL) => {
       url: signURL,
       data: nonce.value,
       lang: localeProperties.value.code,
+      mode: "auth",
     })
     .then((res) => {
       if (res.data.message) {
