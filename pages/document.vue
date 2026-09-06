@@ -50,8 +50,8 @@
     <template v-else>
       <div class="h-screen w-full flex items-center justify-center relative">
         <div class="custom-container">
-          <div class="custom-grid">
-            <div class="col-span-12 lg:col-span-4 lg:col-start-5">
+          <div class="grid grid-cols-10">
+            <div class="col-span-12 lg:col-span-4 lg:col-start-4">
               <div class="card">
                 <loader
                   v-if="pending"
@@ -117,11 +117,31 @@
 
                         <button
                           class="btn btn-primary"
-                          @click="getPdfFile('arraybuffer')"
+                          @click="
+                            accept
+                              ? getPdfFile('arraybuffer')
+                              : requestConsent()
+                          "
                         >
                           <i class="pi pi-arrow-right"></i>
                         </button>
                       </div>
+
+                      <label
+                        class="custom-radio-checkbox"
+                        :class="request ? 'pulse text-danger' : ''"
+                      >
+                        <input type="checkbox" v-model="accept" />
+                        <span
+                          ><p class="leading-5 mb-0">
+                            {{ $t("pages.auth.consent.text") }}
+                            <a @click="openPolicyModal()">{{
+                              $t("pages.auth.consent.link")
+                            }}</a
+                            >{{ $t("pages.auth.consent.text_2") }}
+                          </p></span
+                        >
+                      </label>
                     </div>
                   </template>
                 </div>
@@ -133,6 +153,21 @@
     </template>
   </template>
   <loader v-else :className="'full-overlay'" :showPendingText="true" />
+
+  <modal
+    :show="policyModalIsVisible"
+    :onClose="() => (policyModalIsVisible = false)"
+    :className="'modal-full'"
+    :showLoader="false"
+    :closeOnClickSelf="true"
+  >
+    <template v-slot:header_content>
+      <h3>{{ $t("pages.privacy-policy.title") }}</h3>
+    </template>
+    <template v-slot:body_content>
+      <content />
+    </template>
+  </modal>
 </template>
 
 <script setup>
@@ -144,6 +179,8 @@ import scrollFadeContainer from "../components/ui/scrollFadeContainer.vue";
 import userSignCard from "../components/documents/userSignCard.vue";
 import { onMounted } from "vue";
 import VuePdfEmbed from "vue-pdf-embed";
+import modal from "../components/ui/modal.vue";
+import content from "../components/privacy-policy/content.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -158,6 +195,25 @@ const currentDocument = ref(null);
 const pdfData = ref(null);
 const errorStatus = ref(null);
 const pending = ref(true);
+
+const accept = ref(false);
+const request = ref(false);
+
+const policyModalIsVisible = ref(false);
+
+const openPolicyModal = () => {
+  policyModalIsVisible.value = true;
+};
+
+const requestConsent = () => {
+  if (request.value === false) {
+    request.value = true;
+
+    setTimeout(() => {
+      request.value = false;
+    }, 1000);
+  }
+};
 
 useHead({
   title: t("pages.documents.view.title"),

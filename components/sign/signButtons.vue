@@ -3,7 +3,7 @@
     <p class="font-medium text-danger">{{ signError.message }}</p>
     <p>{{ signError.description }}</p>
     <p v-if="signError.code">{{ signError.code }}</p>
-    
+
     <template
       v-if="
         props.document &&
@@ -140,8 +140,8 @@
     </div>
     <div v-else>
       <button
-        class="border-inactive rounded-xl p-4 flex flex-col justify-center items-center w-full"
-        @click="props.signWithNCALayer"
+        class="border-inactive rounded-xl p-4 flex flex-col justify-center items-center w-full hover:bg-accent-100"
+        @click="accept ? props.signWithNCALayer() : requestConsent()"
       >
         <img width="90px" src="/img/auth/ncalayer-banner.png" />
         <span class="font-medium">{{
@@ -158,8 +158,8 @@
       </div>
 
       <button
-        class="border-inactive rounded-xl p-4 flex flex-col justify-center items-center w-full"
-        @click="props.getQR"
+        class="border-inactive rounded-xl p-4 flex flex-col justify-center items-center w-full hover:bg-accent-100"
+        @click="accept ? props.getQR() : requestConsent()"
       >
         <img width="60px" src="/img/auth/qrcode.svg" />
         <span class="font-medium">{{
@@ -169,6 +169,24 @@
           >({{ $t("pages.auth.sign.sign_with_qr_code_description") }})</span
         >
       </button>
+
+      <div class="mt-8">
+        <label
+          class="custom-radio-checkbox"
+          :class="request ? 'pulse text-danger' : ''"
+        >
+          <input type="checkbox" v-model="accept" />
+          <span
+            ><p class="leading-5 mb-0">
+              {{ $t("pages.auth.consent.text") }}
+              <a @click="openPolicyModal()">{{
+                $t("pages.auth.consent.link")
+              }}</a
+              >{{ $t("pages.auth.consent.text_2") }}
+            </p></span
+          >
+        </label>
+      </div>
     </div>
   </template>
 </template>
@@ -217,10 +235,25 @@ const props = defineProps({
   },
 });
 
+const openPolicyModal = inject("openPolicyModal");
+
+const accept = ref(false);
+const request = ref(false);
+
 const { signError, signQR } = toRefs(props);
 
 const sigexErrorMessages = [
   "Signature does not conform to document settings requirements",
   "Signature violates IIN uniqueness requirement configured in the document settings",
 ];
+
+const requestConsent = () => {
+  if (request.value === false) {
+    request.value = true;
+
+    setTimeout(() => {
+      request.value = false;
+    }, 1000);
+  }
+};
 </script>

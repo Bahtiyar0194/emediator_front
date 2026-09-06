@@ -98,6 +98,7 @@ export default {
     natural_person: 'Физическое лицо',
     personal_data: 'Персональные данные',
     legal_entity_data: 'Сведения о юридическом лице',
+    content: "Содержание",
 
     theme: {
         switch_to_a_light_theme: "Переключиться на светлую тему",
@@ -336,6 +337,13 @@ export default {
                 sign_with_qr_code: 'Войти через QR код',
                 sign_with_qr_code_description: 'С помощью смартфона через eGov Mobile или eGov Business',
             },
+
+            consent: {
+                text: "Я даю согласие на обработку моих персональных данных в соответствии c",
+                link: "политикой конфиденциальности",
+                text_2: "."
+            },
+
             dont_have_an_account: "Нет аккаунта?",
 
             select_links: {
@@ -348,6 +356,18 @@ export default {
         logout: {
             title: 'Выйти из аккаунта',
             please_wait: 'Пожалуйста подождите, идет выход из аккаунта'
+        },
+
+        "privacy-policy": {
+            title: 'Политика конфиденциальности'
+        },
+
+        "refund-policy": {
+            title: 'Политика возврата денежных средств'
+        },
+
+        "the-offer-agreement": {
+            title: 'Договор публичной оферты'
         },
 
         dashboard: {

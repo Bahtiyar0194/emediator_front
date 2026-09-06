@@ -98,6 +98,7 @@ export default {
     natural_person: 'Жеке тұлға',
     personal_data: 'Жеке деректер',
     legal_entity_data: 'Заңды тұлғаның деректері',
+    content: "Мазмұны",
 
     theme: {
         switch_to_a_light_theme: "Жарық тақырыпқа ауысу",
@@ -339,6 +340,13 @@ export default {
                 sign_with_qr_code: 'QR код арқылы кіру',
                 sign_with_qr_code_description: 'Смартфонның көмегімен eGov Mobile немесе eGov Business арқылы кіру',
             },
+
+            consent: {
+                text: "Менің жеке деректерімді",
+                link: "құпиялылық саясатымен ",
+                text_2: "сәйкес өңдеуге келісімімді беремін."
+            },
+
             dont_have_an_account: "Менде аккаунт жоқ.",
 
             select_links: {
@@ -351,6 +359,18 @@ export default {
         logout: {
             title: 'Аккаунттан шығу',
             please_wait: 'Күте тұрыңыз, аккаунттан шығып жатырмыз'
+        },
+
+        "privacy-policy": {
+            title: 'Құпиялылық саясаты'
+        },
+
+        "refund-policy": {
+            title: 'Қаражатты қайтару саясаты'
+        },
+
+        "the-offer-agreement": {
+            title: 'Ашық ұсыныс шарты'
         },
 
         dashboard: {
