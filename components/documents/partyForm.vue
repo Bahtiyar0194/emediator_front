@@ -263,8 +263,6 @@
                           .location.house
                       "
                       type="text"
-                      inputmode="numeric"
-                      pattern="^\d+(\/\d+)?$"
                       placeholder=" "
                     />
                     <label
@@ -589,8 +587,6 @@
                         docData.agreement_parties[props.partyIndex].data
                           .company_location.building
                       "
-                      inputmode="numeric"
-                      pattern="^\d+(\/\d+)?$"
                       placeholder=" "
                     />
                     <label
@@ -893,8 +889,6 @@
                               .attorney.person.data.location.house
                           "
                           type="text"
-                          inputmode="numeric"
-                          pattern="^\d+(\/\d+)?$"
                           placeholder=" "
                         />
                         <label
@@ -1016,8 +1010,6 @@
                         docData.agreement_parties[props.partyIndex].data
                           .attorney.num
                       "
-                      inputmode="numeric"
-                      pattern="^\d+(\/\d+)?$"
                       placeholder=" "
                     />
                     <label
