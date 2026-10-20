@@ -59,6 +59,21 @@
                   </div>
                 </div>
 
+                <roleProvider :roles="[1]">
+                  <div class="col-span-12">
+                    <label class="custom-radio-checkbox">
+                      <input
+                        type="checkbox"
+                        @change="debounceAgreements"
+                        name="show_all_agreements"
+                      />
+                      <span>{{
+                        $t("pages.documents.agreement.show_all")
+                      }}</span>
+                    </label>
+                  </div>
+                </roleProvider>
+
                 <div class="col-span-12">
                   <div class="btn-wrap">
                     <button
@@ -437,6 +452,7 @@
 
 <script setup>
 import { defu } from "defu";
+import roleProvider from "../../components/ui/roleProvider.vue";
 import modal from "@/components/ui/modal.vue";
 import scrollFadeContainer from "../../components/ui/scrollFadeContainer.vue";
 import documentTab from "../../components/documents/tabs/documentTab.vue";
@@ -1134,7 +1150,7 @@ const getQR = async () => {
   await $axiosPlugin
     .post("/auth/get_qr", {
       data: currentAgreement.value[docMode.value].uuid,
-      mode: 'sign'
+      mode: "sign",
     })
     .then((res) => {
       if (res.data.message) {
