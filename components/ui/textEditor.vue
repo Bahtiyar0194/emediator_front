@@ -50,6 +50,24 @@ const editor = useEditor({
     TableHeader,
     TableCell,
   ],
+
+  editorProps: {
+    transformPastedHTML(html) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+
+      // Удаляем атрибут style со ВСЕХ элементов, убирая кастомные шрифты, размеры и цвета
+      doc.querySelectorAll("*").forEach((el) => {
+        el.removeAttribute("style");
+        // Также можно удалить специфичные мусорные атрибуты Word вроде class, lang и т.д.
+        el.removeAttribute("class");
+        el.removeAttribute("lang");
+      });
+
+      return doc.body.innerHTML;
+    },
+  },
+
   onUpdate: ({ editor }) => {
     emit("update:modelValue", editor.getHTML());
   },

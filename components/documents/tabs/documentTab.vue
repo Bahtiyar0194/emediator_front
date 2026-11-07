@@ -124,7 +124,10 @@ const props = defineProps({
 
 const canSign = () =>
   props.document.parties.some(
-    (p) => p.iin === authUser.value.iin && !p.sigex_sign_id,
+    (p) =>
+      ((p.data.attorney && p.data.attorney.person.iin === authUser.value.iin) ||
+        p.iin === authUser.value.iin) &&
+      !p.sigex_sign_id,
   );
 
 const canVerify = () => {

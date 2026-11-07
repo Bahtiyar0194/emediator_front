@@ -390,7 +390,8 @@ export default {
                 title: 'Келісім шарт',
                 prepayment: 'Алдын ала төлем',
                 award: 'Сыйақы',
-                status: 'Шарттың мәртебесі'
+                status: 'Шарттың мәртебесі',
+                includes: 'Медиациялық шартқа қатысады'
             },
             agreement: {
                 title: 'Келісім',

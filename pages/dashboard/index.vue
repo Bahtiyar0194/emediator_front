@@ -1094,7 +1094,7 @@ provide("getMyAgreementTemplates", getMyAgreementTemplates);
 const signWithNCALayer = async () => {
   pendingModal.value = true;
 
-  if (!signedDocument.value) {
+  if(!signedDocument.value) {
     try {
       await ncaLayer.value.connect();
     } catch (err) {

@@ -55,5 +55,9 @@ export const createDataCollection = () => ({
                 },
             }
         }
+    },
+
+    contract: {
+        includes: false
     }
 });

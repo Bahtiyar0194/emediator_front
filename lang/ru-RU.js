@@ -388,7 +388,8 @@ export default {
                 title: 'Договор',
                 prepayment: 'Предоплата',
                 award: 'Вознаграждение',
-                status: 'Статус договора'
+                status: 'Статус договора',
+                includes: 'Участвует в договоре медиации'
             },
             agreement: {
                 title: 'Соглашение',
