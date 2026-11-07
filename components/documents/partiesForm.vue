@@ -17,6 +17,10 @@
         :getUserById="getUserById"
       />
     </div>
+
+    <div v-if="errors['contract.includes']" class="col-span-12">
+      <p class="text-danger">{{ errors['contract.includes'][0] }}</p>
+    </div>
   </div>
 </template>
 

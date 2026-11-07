@@ -26,19 +26,6 @@
 
     <div class="p-5">
       <div class="custom-grid">
-        <!--Участвует в договоре медиации-->
-        <div class="col-span-12">
-          <label class="custom-checkbox my-2">
-            <input
-              type="checkbox"
-              v-model="
-                docData.agreement_parties[props.partyIndex].data.contract
-                  .includes
-              "
-            />
-            <span>{{ $t("pages.documents.contract.includes") }}</span>
-          </label>
-        </div>
         <stepName :num="1" :title="$t('subject_type')" />
 
         <div class="col-span-12">
@@ -642,9 +629,9 @@
           </div>
         </div>
 
-        <!--Имеется доверенное лицо-->
         <div class="col-span-12">
-          <label class="custom-checkbox my-2">
+          <!--Имеется доверенное лицо-->
+          <label class="custom-checkbox">
             <input
               type="checkbox"
               v-model="
@@ -1075,6 +1062,20 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <div class="col-span-12">
+          <!--Участвует в договоре медиации-->
+          <label class="custom-checkbox">
+            <input
+              type="checkbox"
+              v-model="
+                docData.agreement_parties[props.partyIndex].data.contract
+                  .includes
+              "
+            />
+            <span>{{ $t("pages.documents.contract.includes") }}</span>
+          </label>
         </div>
       </div>
     </div>
